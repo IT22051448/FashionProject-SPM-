@@ -1,6 +1,6 @@
-# Ecommerce Bazaar Backend
+# Fashion Retail Backend
 
-Powering a robust and scalable online marketplace
+Powering a robust and scalable Fahsion Retail Store
 
 ## Overview
 

@@ -1,48 +1,48 @@
-import { User } from '../models/user.model.js';
-// import bcrypt from 'bcryptjs';
+import logger from '../../utils/logger.js';
+import User from '../models/user.model.js';
 import { validationResult } from 'express-validator';
 
 const userController = {
 
-    // get all users
+    
     async getAllUsers(req, res) {
         try {
-            const users = await User.find();
+            const users = await User.find().select('-password');
             res.json(users);
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            logger.error(error.message);
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     },
 
-    // get user by id
+    
     async getUserById(req, res) {
         try {
-            const user = await User.findById(req.params.id);
+            const user = await User.findById(req.params.id).select('-password');
             res.json(user);
         }
         catch (error) {
-            res.status(500).json({ message: error.message });
+            logger.error(error.message);
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     },
 
 
-    // update a user
     async updateUser(req, res) {
         try {
-            // validate user input
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
+                return res.status(400).json({ message: 'Invalid' });
             }
 
-            // check if user exists
             const user = await User.findById(req.params.id);
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            // update the user
             user.name = req.body.name;
+            user.firstname = req.body.firstname;
+            user.lastname = req.body.lastname;
             user.email = req.body.email;
             user.password = bcrypt.hashSync(req.body.password, 10);
             user.role = req.body.role;
@@ -53,29 +53,27 @@ const userController = {
             user.postalCode = req.body.postalCode;
             user.country = req.body.country;
 
-            // save the user
             await user.save();
             res.json({ message: 'User updated successfully' });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            logger.error(error.message);
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     },
 
-    // delete a user
     async deleteUser(req, res) {
         try {
-            // check if user exists
             const user = await User.findById(req.params.id);
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
 
-            // delete the user
             await user.remove();
             res.json({ message: 'User deleted successfully' });
         }
         catch (error) {
-            res.status(500).json({ message: error.message });
+            logger.error(error.message);
+            res.status(500).json({ message: 'Internal server error' });
         }
     }
 };
