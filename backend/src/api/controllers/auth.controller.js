@@ -72,9 +72,9 @@ const authController = {
         try {
             let user;
             if (type === 'email') {
-                user = await User.findOne({ email: username}).select('-password');
+                user = await User.findOne({ email: username});
             } else {
-                user = await User.findOne({ username: username }).select('-password');
+                user = await User.findOne({ username: username });
             }
 
             if (!user) {

@@ -1,6 +1,7 @@
 import logger from '../../utils/logger.js';
 import User from '../models/user.model.js';
 import { validationResult } from 'express-validator';
+import bcrypt from 'bcrypt';
 
 const userController = {
 
@@ -40,11 +41,22 @@ const userController = {
                 return res.status(404).json({ message: 'User not found' });
             }
 
+            const previousPassword = req.param.prevPassword;
+
+            const isMatch = await bcrypt.compare(previousPassword, user.password);
+
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Invalid password' });
+            }
+
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(req.body.newPassword, salt);
+
             user.name = req.body.name;
             user.firstname = req.body.firstname;
             user.lastname = req.body.lastname;
             user.email = req.body.email;
-            user.password = bcrypt.hashSync(req.body.password, 10);
+            user.password = hashedPassword;
             user.role = req.body.role;
             user.avatar = req.body.avatar;
             user.contact = req.body.contact;

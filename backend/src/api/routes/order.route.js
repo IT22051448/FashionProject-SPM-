@@ -5,5 +5,6 @@ import authMiddleware from '../middleware/authMiddleware';
 const orderRouter = Router();
 
 orderRouter.get('/', authMiddleware(['admin', 'user']), orderController.getOrders);
+orderRouter.post('/', authMiddleware(['user']), orderController.createOrder);
 
 export default orderRouter;

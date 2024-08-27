@@ -1,6 +1,7 @@
 import pino from "pino";
+import caller from "pino-caller"
 
-const logger = pino({
+const logger = caller(pino({
   transport: {
     target: "pino-pretty",
     options: {
@@ -9,6 +10,6 @@ const logger = pino({
       ignore: "pid,hostname",
     },
   },
-});
+}));
 
 export default logger;
