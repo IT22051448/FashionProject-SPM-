@@ -7,23 +7,29 @@ import userRouter from "./api/routes/user.route";
 import authRouter from "./api/routes/auth.route";
 import orderRouter from "./api/routes/order.route";
 
-
-const PORT =  process.env.PORT ||5000;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "50mb" }));
 
 app.get("/", (req, res) => {
-    res.send("Hello World!");
-})
+  res.send("Hello World!");
+});
 
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/orders", orderRouter);
 
 app.listen(PORT, () => {
-    logger.info(`Server is running on port: ${PORT}`);
-    connect();
+  logger.info(`Server is running on port: ${PORT}`);
+  connect();
 });

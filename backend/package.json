@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
     "pino": "^9.3.2",
+    "pino-caller": "^3.4.0",
     "pino-pretty": "^11.2.2"
   },
   "devDependencies": {
