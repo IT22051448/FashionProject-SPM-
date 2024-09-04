@@ -10,6 +10,10 @@ import NotFound from "./pages/not-found/notfound";
 import CustomerLayout from "./layouts/customer/layout";
 import ShoppingHome from "./pages/customer/home/home";
 
+import LoyaltySignUp from "./pages/customer/loyalty/LoyaltyCustomers";
+import LoyaltyReferral from "./pages/customer/loyalty/LoyaltyFriendReferal";
+import LoyaltyMember from "./pages/customer/loyalty/LoyaltyMember";
+
 function App() {
   return (
     <>
@@ -25,6 +29,9 @@ function App() {
         </Route>
         <Route path="/shop" element={<CustomerLayout />}>
           <Route path="home" element={<ShoppingHome />} />
+          <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
+          <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
+          <Route path="LoyaltyMember" element={<LoyaltyMember />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
