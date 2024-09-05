@@ -37,31 +37,6 @@ exports.getAllCustomers = async (req, res) => {
   }
 };
 
-// Update loyalty points
-/*
-exports.updateLoyaltyPoints = async (req, res) => {
-  try {
-    console.log("Request received:");
-    console.log("Email:", req.params.email);
-    console.log("Points:", req.body.points);
-
-    const { points } = req.body;
-    const customer = await Loyalty.findOneAndUpdate(
-      { email: req.params.email },
-      { $inc: { loyaltyPoints: points } },
-      { new: true }
-    );
-    if (!customer) {
-      console.log("Customer not found");
-      return res.status(403).json({ error: "Customer not found" });
-    }
-    console.log("Customer updated:", customer);
-    res.json(customer);
-  } catch (err) {
-    console.error("Error updating loyalty points:", err);
-    res.status(400).json({ error: err.message });
-  }
-}; */
 
 // Update loyalty points and tier
 exports.updateLoyaltyPoints = async (req, res) => {

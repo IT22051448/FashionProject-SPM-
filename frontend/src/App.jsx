@@ -34,8 +34,8 @@ function App() {
             </CheckAuth>
           }
         >
-          <Route path="login" element={<AuthLogin />} />
           <Route path="signup" element={<AuthSignup />} />
+          <Route path="login" element={<AuthLogin />} />
         </Route>
 
         <Route
