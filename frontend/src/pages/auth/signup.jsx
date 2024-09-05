@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import CommonForm from "@/components/common/form";
 import { resigterFormControls } from "@/config";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "@/redux/authSlice";
 
 const initialState = {
