@@ -8,7 +8,7 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
     !isAuthenticated &&
     !(
       location.pathname.includes("/login") ||
-      location.pathname.includes("/register")
+      location.pathname.includes("/signup")
     )
   ) {
     return <Navigate to="/auth/login" />;
@@ -17,7 +17,7 @@ const CheckAuth = ({ isAuthenticated, user, children }) => {
   if (
     isAuthenticated &&
     (location.pathname.includes("/login") ||
-      location.pathname.includes("/register"))
+      location.pathname.includes("/signup"))
   ) {
     if (user?.role === "admin") {
       return <Navigate to="/admin/dashboard" />;
