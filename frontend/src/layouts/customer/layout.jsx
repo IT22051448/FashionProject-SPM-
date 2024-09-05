@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import ShoppingHeader from "./components/header";
 
 const CustomerLayout = () => {
+  console.log("test");
   return (
     <div className="flex flex-col bg-white overflow-hidden">
       <ShoppingHeader />
