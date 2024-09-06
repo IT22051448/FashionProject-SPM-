@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const ReferAFriend = () => {
   const [referredEmail, setReferredEmail] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const userEmail = useSelector((state) => state.auth.user?.email);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user && user.email) {
-      setUserEmail(user.email);
-    }
-  }, []);
 
   const handleRefer = async () => {
     try {
@@ -21,7 +15,8 @@ const ReferAFriend = () => {
         return;
       }
 
-      await axios.post("/api/referral/refer", {
+      await axios.post("http://localhost:5000/api/referral/refer", {
+        // Check if this URL is correct
         referrerEmail: userEmail,
         referredEmail,
       });

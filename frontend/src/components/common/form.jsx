@@ -24,29 +24,28 @@ const CommonForm = ({
     let element = null;
     const value = formData[control.name] || "";
 
-    switch (control.componenType) {
+    const inputProps = {
+      name: control.name,
+      placeholder: control.placeholder,
+      id: control.name,
+      type: control.type,
+      value: value,
+      onChange: (e) =>
+        setFormData({ ...formData, [control.name]: e.target.value }),
+      readOnly: control.readOnly || false,
+    };
+
+    switch (control.componentType) {
       case types.INPUT:
-        element = (
-          <Input
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            type={control.type}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Input {...inputProps} />;
         break;
 
       case types.SELECT:
         element = (
           <Select
-            onValueChange={setFormData({
-              ...formData,
-              [control.name]: value,
-            })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, [control.name]: value })
+            }
             value={value}
           >
             <SelectTrigger className="w-full">
@@ -80,18 +79,7 @@ const CommonForm = ({
         break;
 
       default:
-        element = (
-          <Input
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            type={control.type}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Input {...inputProps} />;
     }
 
     return element;

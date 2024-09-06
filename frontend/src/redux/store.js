@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
+import loyaltyReducer from "./loyaltySlice/loyaltySlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 
@@ -11,6 +12,7 @@ const persistConfig = {
 
 const reducer = combineReducers({
   auth: authReducer,
+  loyalty: loyaltyReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

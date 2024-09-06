@@ -34,6 +34,23 @@ export const loginUser = createAsyncThunk("auth/login", async (formData) => {
   return response.data;
 });
 
+export const clearNotifications = createAsyncThunk(
+  "auth/clearNotifications",
+  async (email, { rejectWithValue }) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/users/clear-notifications",
+        { email },
+        {
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -66,15 +83,34 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.success ? action.payload.user : null;
-        state.token = action.payload.success ? action.payload.token : null;
-        state.isAuthenticated = action.payload.success ? true : false;
+        if (action.payload.success) {
+          state.user = action.payload.user;
+          state.token = action.payload.token;
+          state.isAuthenticated = true;
+
+          // Check for notifications and show toast
+          if (state.user.notifications && state.user.notifications.length > 0) {
+            state.user.notifications.forEach((notification) => {});
+          }
+        } else {
+          state.user = null;
+          state.token = null;
+          state.isAuthenticated = false;
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
         state.error = action.error.message;
+      })
+      .addCase(clearNotifications.fulfilled, (state) => {
+        if (state.user) {
+          state.user.notifications = []; // Clear notifications in Redux state after backend success
+        }
+      })
+      .addCase(clearNotifications.rejected, (state, action) => {
+        toast.error(action.payload || "Failed to clear notifications"); // Show error message if clearing fails
       });
   },
 });

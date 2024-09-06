@@ -16,6 +16,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// verify connection configuration
+
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Server is ready to take messages");
+  }
+});
+
 // Create a new referral
 exports.createReferral = async (req, res) => {
   try {
@@ -34,7 +44,7 @@ exports.createReferral = async (req, res) => {
     console.log("Referral saved successfully.");
 
     // Send email with referral link
-    const referralLink = `http://localhost:5173/SignUpPage?referralToken=${referralToken}`; // Use the actual domain for production
+    const referralLink = `http://localhost:5173/auth/signup?referralToken=${referralToken}`;
 
     const mailOptions = {
       from: process.env.EMAIL_USER,

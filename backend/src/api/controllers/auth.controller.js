@@ -4,6 +4,8 @@ import logger from "../../utils/logger.js";
 import bcrypt from "bcrypt";
 import genAuthToken from "../../utils/genAuthToken.js";
 import { emailOrUsername } from "../../utils/helpers.js";
+import Referral from "../models/referral";
+import Loyalty from "../models/loyalty";
 
 const authController = {
   async register(req, res) {
@@ -13,46 +15,68 @@ const authController = {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const userNameExists = await User.findOne({
-        username: req.body.username,
-      });
+      const {
+        username,
+        firstname,
+        lastname,
+        email,
+        password,
+        role,
+        avatar,
+        contact,
+        address,
+        city,
+        postalCode,
+        country,
+        referralCode,
+      } = req.body;
+
+      // Check if username or email already exists
+      const userNameExists = await User.findOne({ username });
       if (userNameExists) {
         return res
           .status(400)
           .json({ message: "Username already exists", success: false });
       }
 
-      const userExists = await User.findOne({ email: req.body.email });
+      const userExists = await User.findOne({ email });
       if (userExists) {
         return res
           .status(400)
           .json({ message: "User already exists", success: false });
       }
 
+      // Hash the password
       const salt = await bcrypt.genSalt();
-      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
       const user = new User({
-        username: req.body.username,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
+        username,
+        firstname,
+        lastname,
+        email,
         password: hashedPassword,
-        role: req.body.role,
-        avatar: req.body.avatar,
-        contact: req.body.contact,
-        address: req.body.address,
-        city: req.body.city,
-        postalCode: req.body.postalCode,
-        country: req.body.country,
+        role,
+        avatar,
+        contact,
+        address,
+        city,
+        postalCode,
+        country,
         created_date: new Date(),
         last_login: new Date(),
+        referralCode: referralCode || null,
       });
 
       try {
         const savedUser = await user.save();
         savedUser.password = undefined;
         const token = genAuthToken(savedUser);
+
+        // Process referral code if present
+        if (referralCode) {
+          await processReferral(referralCode, savedUser.email);
+        }
 
         res.status(201).json({ user: savedUser, token: token, success: true });
       } catch (error) {
@@ -129,6 +153,47 @@ const authController = {
       res.status(500).json({ sucess: false, message: "Internal server error" });
     }
   },
+};
+
+// Function to process referral
+const processReferral = async (referralToken, referredEmail) => {
+  try {
+    // Find the referral using the token
+    const referral = await Referral.findOne({ token: referralToken });
+    if (referral) {
+      const referrerEmail = referral.referrerEmail;
+
+      // Find the referrer
+      const referrer = await User.findOne({ email: referrerEmail });
+      if (referrer) {
+        // Find the loyalty record for the referrer
+        const loyalty = await Loyalty.findOne({ email: referrerEmail });
+
+        if (loyalty) {
+          // Add 50 points to the referrer's loyalty points
+          loyalty.loyaltyPoints += 50;
+          await loyalty.save();
+
+          // Add a notification to the referrer
+          referrer.notifications.push(
+            "Congratulations, Your referral has successfully Signed Up. As a reward, 50 points have been added to your Loyalty account."
+          );
+          await referrer.save();
+        } else {
+          console.log(`Loyalty record not found for ${referrerEmail}`);
+        }
+      } else {
+        console.log(`Referrer not found with email ${referrerEmail}`);
+      }
+
+      // Delete referral entry
+      await Referral.deleteOne({ token: referralToken });
+    } else {
+      console.log(`Referral token ${referralToken} not found`);
+    }
+  } catch (error) {
+    console.error("Error processing referral:", error);
+  }
 };
 
 export default authController;

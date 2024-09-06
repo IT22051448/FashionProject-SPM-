@@ -42,6 +42,14 @@ export const resigterFormControls = [
     componentType: "input",
     type: "password",
   },
+  {
+    name: "referralCode",
+    label: "Referral Code",
+    type: "text",
+    componentType: "input",
+    readOnly: true,
+    placeholder: "Referral Code (if applicable)",
+  },
 ];
 
 export const loginFormControls = [

@@ -15,11 +15,13 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
+    "nodemailer": "^6.9.15",
     "pino": "^9.3.2",
     "pino-caller": "^3.4.0",
     "pino-pretty": "^11.2.2"

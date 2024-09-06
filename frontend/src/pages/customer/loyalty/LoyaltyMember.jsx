@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 //import Image from "../assets/BackgroundMain4.jpg";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const MembershipDetails = () => {
   const navigate = useNavigate();
@@ -9,13 +10,13 @@ const MembershipDetails = () => {
   const [promoCodes, setPromoCodes] = useState([]);
   const [error, setError] = useState(null);
 
-  // Get customer email from session storage or a placeholder
-  const userEmail = JSON.parse(sessionStorage.getItem("user"))?.email;
+  // Get customer email from Redux state
+  const userEmail = useSelector((state) => state.auth.user?.email);
 
   const fetchCustomerDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/loyalty/customer/${userEmail}`
+        `http://localhost:5000/api/loyalty/customer/${userEmail}`
       );
       setCustomer(response.data);
     } catch (err) {
@@ -29,7 +30,7 @@ const MembershipDetails = () => {
   const fetchPromoCodes = async (tier) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/loyalty/promo-codes/${tier}`
+        `http://localhost:5000/api/loyalty/promo-codes/${tier}`
       );
       setPromoCodes(response.data);
     } catch (err) {
@@ -41,7 +42,9 @@ const MembershipDetails = () => {
   };
 
   useEffect(() => {
-    fetchCustomerDetails();
+    if (userEmail) {
+      fetchCustomerDetails();
+    }
   }, [userEmail]);
 
   useEffect(() => {
@@ -160,7 +163,7 @@ const MembershipDetails = () => {
                   </div>
                   <div className="ml-6 flex-shrink-0">
                     <button
-                      onClick={() => navigate("/refer-friend")}
+                      onClick={() => navigate("/shop/LoyaltyReferral")}
                       className="inline-flex items-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                     >
                       Refer a Friend

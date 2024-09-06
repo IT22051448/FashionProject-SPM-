@@ -1,46 +1,49 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-//import Image from "../assets/BackgroundMain4.jpg";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { createLoyaltyCustomer } from "../../../redux/loyaltySlice/loyaltySlice";
 
 const NewLoyaltyCustomerForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // State hooks for form inputs
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [joinDate, setJoinDate] = useState("");
 
+  // Initialize joinDate to today's date
+  const [joinDate, setJoinDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
+  // Access Email from Redux
+  const userEmail = useSelector((state) => state.auth.user?.email);
+
+  // Update the email state when the component renders
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user && user.email) {
-      setEmail(user.email);
+    if (userEmail) {
+      setEmail(userEmail);
     }
-  }, []);
+  }, [userEmail]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = { name, email, phoneNumber, dateOfBirth, joinDate };
 
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/loyalty/create-customer",
-        {
-          name,
-          email,
-          phoneNumber,
-          dateOfBirth,
-          joinDate,
-        }
-      );
-      console.log("Customer added:", response.data);
-      navigate("/");
-      // Optionally, you can reset the form or redirect the user
-    } catch (error) {
-      console.error("There was an error adding the customer:", error);
-    }
+    // Dispatch the createLoyaltyCustomer action
+    dispatch(createLoyaltyCustomer(formData))
+      .unwrap()
+      .then(() => {
+        console.log("Customer added successfully");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("There was an error adding the customer:", error);
+      });
   };
 
   // Handle input changes
@@ -49,9 +52,6 @@ const NewLoyaltyCustomerForm = () => {
     switch (name) {
       case "name":
         setName(value);
-        break;
-      case "email":
-        setEmail(value);
         break;
       case "phoneNumber":
         setPhoneNumber(value);
@@ -68,14 +68,7 @@ const NewLoyaltyCustomerForm = () => {
   };
 
   return (
-    <div
-      className="container max-w-full max-h-full"
-      // style={{
-      //  backgroundImage: `url(${Image})`,
-      //  backgroundSize: "cover",
-      //  backgroundPosition: "center",
-      // }}
-    >
+    <div className="container max-w-full max-h-full">
       <div className="flex justify-center items-center h-screen">
         <div className="w-full md:w-11/12 lg:w-5/6 xl:w-2/3 relative">
           <div className="bg-blue-50 opacity-95 rounded-lg p-8 border-blue-300 border-4">
@@ -107,9 +100,8 @@ const NewLoyaltyCustomerForm = () => {
                     type="email"
                     name="email"
                     value={email}
-                    onChange={handleChange}
-                    //readOnly
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
+                    readOnly // Make the email field non-editable
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 bg-gray-100 cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -148,7 +140,7 @@ const NewLoyaltyCustomerForm = () => {
                     type="date"
                     name="joinDate"
                     value={joinDate}
-                    onChange={handleChange}
+                    readOnly
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
                   />
                 </div>

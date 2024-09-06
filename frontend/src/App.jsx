@@ -18,6 +18,10 @@ import LoyaltySignUp from "./pages/customer/loyalty/LoyaltyCustomers";
 import LoyaltyReferral from "./pages/customer/loyalty/LoyaltyFriendReferal";
 import LoyaltyMember from "./pages/customer/loyalty/LoyaltyMember";
 
+// Import ToastContainer from react-toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
@@ -25,6 +29,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       <Routes>
         <Route
           path="/auth"

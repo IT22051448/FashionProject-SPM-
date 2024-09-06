@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CommonForm from "@/components/common/form";
 import { resigterFormControls } from "@/config";
 import { useDispatch } from "react-redux";
@@ -11,6 +11,7 @@ const initialState = {
   lastname: "",
   email: "",
   password: "",
+  referralCode: "",
 };
 
 const AuthSignup = () => {
@@ -25,6 +26,17 @@ const AuthSignup = () => {
       if (data?.payload?.success) navigate("/shop/home");
     });
   }
+
+  useEffect(() => {
+    // Extract referral token from URL and set referral code
+    const queryParams = new URLSearchParams(window.location.search);
+    const referralToken = queryParams.get("referralToken");
+
+    // Call API to get the referral code
+    if (referralToken) {
+      setFormData((prev) => ({ ...prev, referralCode: referralToken }));
+    }
+  }, []);
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
