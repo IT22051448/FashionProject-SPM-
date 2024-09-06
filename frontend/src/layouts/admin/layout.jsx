@@ -2,6 +2,8 @@ import { Outlet } from "react-router-dom";
 import AdminSidebar from "./Components/sidebar";
 import AdminHeader from "./Components/header";
 import { useState } from "react";
+import { Toaster } from "@/components/ui/toaster";
+
 
 const AdminLayout = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -14,6 +16,7 @@ const AdminLayout = () => {
         {/* Header */}
         <AdminHeader setOpen={setOpenSidebar} />
         <main className="flex-1 flex-col bg-muted/40 p-4 md:p-6">
+          <Toaster />
           <Outlet />
         </main>
       </div>

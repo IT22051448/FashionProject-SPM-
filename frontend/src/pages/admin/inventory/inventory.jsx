@@ -1,4 +1,5 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -8,7 +9,8 @@ import {
 } from "@/components/ui/sheet";
 import CommonForm from "@/components/common/form";
 import { addStockFormElements } from "@/config";
-
+import { addNewStock, fetchAllStock } from "@/redux/stockSlice";
+import { useToast } from "@/hooks/use-toast";
 const initialFormData = {
   title: "",
   description: "",
@@ -23,12 +25,34 @@ function Admininventory() {
   const [openAddStockDialog, setOpenAddStockDialog] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
 
-  const onSubmit = () => {
-    
-  };
+  const { stockList } = useSelector((state) => state.stock); // Correctly access stockList
 
-  
-  console.log(formData, "formData");
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    dispatch(fetchAllStock());
+  }, [dispatch]);
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    dispatch(
+      addNewStock({
+        ...formData,
+      })
+    ).then((data) => {
+      console.log(data);
+      if (data) {
+        dispatch(fetchAllStock());
+        setFormData(initialFormData);
+        setOpenAddStockDialog(false);
+        toast({
+          title: "Stock added successfully",
+        });
+      }
+    });
+  };
+  console.log(stockList, "stockList"); // Check if stockList is populated
 
   return (
     <div>
