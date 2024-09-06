@@ -2,8 +2,14 @@
 import PropTypes from "prop-types";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Select, SelectTrigger, SelectValue } from "../ui/select";
-import { SelectContent, SelectItem } from "@radix-ui/react-select";
+
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+  SelectContent,
+} from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 
@@ -24,7 +30,7 @@ const CommonForm = ({
     let element = null;
     const value = formData[control.name] || "";
 
-    switch (control.componenType) {
+    switch (control.componentType) {
       case types.INPUT:
         element = (
           <Input
@@ -43,14 +49,16 @@ const CommonForm = ({
       case types.SELECT:
         element = (
           <Select
-            onValueChange={setFormData({
-              ...formData,
-              [control.name]: value,
-            })}
+            onValueChange={(value) =>
+              setFormData({
+                ...formData,
+                [control.name]: value,
+              })
+            }
             value={value}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={control.placeholder} />
+              <SelectValue placeholder={control.label} />
             </SelectTrigger>
             <SelectContent>
               {control.options && control.options.length > 0
