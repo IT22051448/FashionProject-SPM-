@@ -7,7 +7,7 @@ import userRouter from "./api/routes/user.route";
 import authRouter from "./api/routes/auth.route";
 import orderRouter from "./api/routes/order.route";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -31,5 +31,7 @@ app.use("/api/orders", orderRouter);
 
 app.listen(PORT, () => {
   logger.info(`Server is running on port: ${PORT}`);
+  console.log(`Server is running on port: ${PORT}`);
+
   connect();
 });

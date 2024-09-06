@@ -6,6 +6,7 @@ import AdminLayout from "./layouts/admin/layout";
 import AdminDashboard from "./pages/admin/dashboard/dashboard";
 import AdminProducts from "./pages/admin/products/products";
 import AdminOrders from "./pages/admin/orders/orders";
+import Admininventory from "./pages/admin/inventory/inventory";
 import NotFound from "./pages/not-found/notfound";
 import CustomerLayout from "./layouts/customer/layout";
 import ShoppingHome from "./pages/customer/home/home";
@@ -45,6 +46,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="inventory" element={<Admininventory />} />
         </Route>
 
         <Route

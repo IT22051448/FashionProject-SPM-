@@ -25,7 +25,7 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk("auth/login", async (formData) => {
   const response = await axios.post(
-    "http://localhost:5000/api/auth/login",
+    "http://localhost:3000/api/auth/login",
     formData,
     {
       withCredentials: true,
