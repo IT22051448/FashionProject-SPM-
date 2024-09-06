@@ -39,7 +39,7 @@ const NewLoyaltyCustomerForm = () => {
       .unwrap()
       .then(() => {
         console.log("Customer added successfully");
-        navigate("/");
+        navigate("/shop");
       })
       .catch((error) => {
         console.error("There was an error adding the customer:", error);

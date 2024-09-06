@@ -153,6 +153,18 @@ const authController = {
       res.status(500).json({ sucess: false, message: "Internal server error" });
     }
   },
+
+  async logout(req, res) {
+    try {
+      // Clear the authentication token or session cookie
+      res.clearCookie("token"); // Assumes the token is stored in a cookie named 'token'
+
+      res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      logger.error("Logout error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
 };
 
 // Function to process referral

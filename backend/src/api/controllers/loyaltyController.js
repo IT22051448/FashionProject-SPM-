@@ -37,7 +37,6 @@ exports.getAllCustomers = async (req, res) => {
   }
 };
 
-
 // Update loyalty points and tier
 exports.updateLoyaltyPoints = async (req, res) => {
   try {
@@ -167,5 +166,107 @@ exports.getPromoCodesByTier = async (req, res) => {
     res.json(promoCodes);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+
+// Fetch all promo codes
+exports.getAllPromoCodes = async (req, res) => {
+  try {
+    const promoCodes = await PromoCode.find(); // Fetch all promo codes from the database
+    res.status(200).json(promoCodes);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch promo codes" });
+  }
+};
+
+// Delete a promo code by ID
+exports.deletePromoCode = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find and delete the promo code by ID
+    const deletedPromo = await PromoCode.findByIdAndDelete(id);
+
+    // If no promo code found, return an error
+    if (!deletedPromo) {
+      return res.status(404).json({ error: "Promo code not found" });
+    }
+
+    // Return a success message
+    res.status(200).json({ message: "Promo code deleted successfully" });
+  } catch (error) {
+    // Handle any errors during the deletion process
+    res.status(500).json({ error: "Failed to delete promo code" });
+  }
+};
+
+// Update a promo code by ID
+exports.updatePromoCode = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    // Find the promo code by ID and update it with the provided data
+    const updatedPromo = await PromoCode.findByIdAndUpdate(id, updateData, {
+      new: true, // Return the updated document
+      runValidators: true, // Validate the update against the schema
+    });
+
+    // If no promo code found, return an error
+    if (!updatedPromo) {
+      return res.status(404).json({ error: "Promo code not found" });
+    }
+
+    // Return the updated promo code
+    res.status(200).json(updatedPromo);
+  } catch (error) {
+    // Handle any errors during the update process
+    res.status(400).json({ error: "Failed to update promo code" });
+  }
+};
+
+exports.getPromoCodeById = async (req, res) => {
+  try {
+    const promoCodeId = req.params.id;
+    console.log("Promo Code ID:", promoCodeId); // Check the received ID
+
+    if (!promoCodeId) {
+      console.error("Promo Code ID is undefined or missing");
+      return res.status(400).json({ message: "Promo Code ID is required" });
+    }
+
+    const promoCode = await PromoCode.findById(promoCodeId);
+    console.log("Fetched Promo Code:", promoCode); // Verify fetched promo code
+
+    if (!promoCode) {
+      return res.status(404).json({ message: "Promo code not found" });
+    }
+
+    res.json(promoCode);
+  } catch (error) {
+    console.error("Server Error:", error); // Log error details
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Update a promo code by ID
+exports.updatePromoCodeById = async (req, res) => {
+  try {
+    const promoCodeId = req.params.id;
+    const updateData = req.body; // Data to update
+
+    const updatedPromoCode = await PromoCode.findByIdAndUpdate(
+      promoCodeId,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedPromoCode) {
+      return res.status(404).json({ message: "Promo code not found" });
+    }
+
+    res.json(updatedPromoCode);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

@@ -1,4 +1,10 @@
-import { LayoutDashboard, Shirt, PackageOpen, Warehouse } from "lucide-react";
+import {
+  LayoutDashboard,
+  Shirt,
+  PackageOpen,
+  Warehouse,
+  Stamp,
+} from "lucide-react";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const adminSideBarMenuItems = [
@@ -25,6 +31,13 @@ export const adminSideBarMenuItems = [
     label: "Inventory",
     path: "/admin/inventory",
     icon: <Warehouse />,
+  },
+
+  {
+    id: "promocodes",
+    label: "Promo Codes",
+    path: "/admin/promocodes",
+    icon: <Stamp />,
   },
 ];
 

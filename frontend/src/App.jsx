@@ -17,6 +17,9 @@ import ShoppingCheckout from "./pages/customer/checkout/checkout";
 import LoyaltySignUp from "./pages/customer/loyalty/LoyaltyCustomers";
 import LoyaltyReferral from "./pages/customer/loyalty/LoyaltyFriendReferal";
 import LoyaltyMember from "./pages/customer/loyalty/LoyaltyMember";
+import LoyaltyPromos from "./pages/admin/promocodes/LoyaltyPromos";
+import ViewLoyaltyPromos from "./pages/admin/promocodes/ViewLoyaltyPromos";
+import UpdateLoyaltyPromos from "./pages/admin/promocodes/UpdateLoyaltyPromos";
 
 // Import ToastContainer from react-toastify
 import { ToastContainer } from "react-toastify";
@@ -54,6 +57,9 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="promocodes" element={<LoyaltyPromos />} />
+          <Route path="view-promos" element={<ViewLoyaltyPromos />} />
+          <Route path="update-promos/:id" element={<UpdateLoyaltyPromos />} />
         </Route>
 
         <Route

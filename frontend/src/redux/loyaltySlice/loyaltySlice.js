@@ -25,6 +25,22 @@ export const createLoyaltyCustomer = createAsyncThunk(
   }
 );
 
+// Async thunk to check if a user is a loyalty customer
+export const checkLoyaltyCustomer = createAsyncThunk(
+  "loyalty/checkCustomer",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/loyalty/check-customer",
+        { email }
+      );
+      return response.data.exists;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Loyalty slice definition
 const loyaltySlice = createSlice({
   name: "loyalty",
@@ -41,6 +57,18 @@ const loyaltySlice = createSlice({
         state.customers.push(action.payload);
       })
       .addCase(createLoyaltyCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(checkLoyaltyCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(checkLoyaltyCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isLoyaltyCustomer = action.payload;
+      })
+      .addCase(checkLoyaltyCustomer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
       });

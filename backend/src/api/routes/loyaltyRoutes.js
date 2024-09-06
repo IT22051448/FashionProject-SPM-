@@ -10,6 +10,10 @@ const {
   getPromoCodesByTier,
   addPromoCode,
   validatePromoCode,
+  getAllPromoCodes,
+  deletePromoCode,
+  getPromoCodeById,
+  updatePromoCodeById,
 } = require("../controllers/loyaltyController");
 
 // Add a new customer
@@ -38,5 +42,17 @@ router.post("/promo-codes", addPromoCode);
 
 // Validate and apply a promo code
 router.post("/validate-promo-code", validatePromoCode);
+
+// Get All Promo Codes
+router.get("/promo-codes", getAllPromoCodes);
+
+// Delete a promo code by ID
+router.delete("/promo-codes/:id", deletePromoCode);
+
+// Get a promo code by ID
+router.get("/promocodes/:id", getPromoCodeById);
+
+// Update a promo code by ID
+router.put("/promocodes/:id", updatePromoCodeById);
 
 module.exports = router;

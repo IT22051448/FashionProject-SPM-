@@ -12,4 +12,7 @@ authRouter.post(
   authController.checkAuth
 );
 
+// Add the logout route
+authRouter.post("/logout", authController.logout);
+
 export default authRouter;

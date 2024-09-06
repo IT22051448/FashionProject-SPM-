@@ -34,6 +34,22 @@ export const loginUser = createAsyncThunk("auth/login", async (formData) => {
   return response.data;
 });
 
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  try {
+    await fetch("http://localhost:5000/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    localStorage.removeItem("persist:root");
+
+    window.location.href = "/auth/login";
+  } catch (error) {
+    console.error("Logout error:", error);
+    throw error;
+  }
+});
+
 export const clearNotifications = createAsyncThunk(
   "auth/clearNotifications",
   async (email, { rejectWithValue }) => {
@@ -87,11 +103,6 @@ const authSlice = createSlice({
           state.user = action.payload.user;
           state.token = action.payload.token;
           state.isAuthenticated = true;
-
-          // Check for notifications and show toast
-          if (state.user.notifications && state.user.notifications.length > 0) {
-            state.user.notifications.forEach((notification) => {});
-          }
         } else {
           state.user = null;
           state.token = null;
@@ -102,6 +113,14 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
+        state.error = action.error.message;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
         state.error = action.error.message;
       })
       .addCase(clearNotifications.fulfilled, (state) => {
