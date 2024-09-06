@@ -10,6 +10,8 @@ import {
 import CommonForm from "@/components/common/form";
 import { addStockFormElements } from "@/config";
 import { addNewStock, fetchAllStock } from "@/redux/stockSlice";
+import AdminStockList from "@/layouts/admin/Components/adminStockList";
+
 import { useToast } from "@/hooks/use-toast";
 const initialFormData = {
   title: "",
@@ -52,7 +54,7 @@ function Admininventory() {
       }
     });
   };
-  console.log(stockList, "stockList"); // Check if stockList is populated
+  //console.log(stockList, "stockList");
 
   return (
     <div>
@@ -86,6 +88,7 @@ function Admininventory() {
           </SheetContent>
         </Sheet>
       </Fragment>
+      <AdminStockList />
     </div>
   );
 }
