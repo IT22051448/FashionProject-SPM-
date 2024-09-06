@@ -6,6 +6,7 @@ import connect from "./utils/db.connection";
 import userRouter from "./api/routes/user.route";
 import authRouter from "./api/routes/auth.route";
 import orderRouter from "./api/routes/order.route";
+import stockRouter from "./api/routes/stock.route";
 
 const PORT = process.env.PORT || 3000;
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/stock", stockRouter);
 
 app.listen(PORT, () => {
   logger.info(`Server is running on port: ${PORT}`);
