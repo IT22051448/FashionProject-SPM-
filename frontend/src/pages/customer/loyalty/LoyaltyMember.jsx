@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-//import Image from "../assets/BackgroundMain4.jpg";
+
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -98,14 +98,7 @@ const MembershipDetails = () => {
   const validPromoCodes = getValidPromoCodes(promoCodes);
 
   return (
-    <div
-    //className="container max-w-full max-h-full"
-    //style={{
-    //  backgroundImage: `url(${Image})`,
-    //  backgroundSize: "cover",
-    //  backgroundPosition: "center",
-    //}}
-    >
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-gray-100 to-gray-300">
       <div className="flex-grow flex justify-center items-start p-4">
         <div className="w-full md:w-11/12 lg:w-5/6 xl:w-2/3 relative">
           <div

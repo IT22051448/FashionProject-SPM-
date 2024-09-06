@@ -22,7 +22,7 @@ const ReferAFriend = () => {
       });
 
       alert("Referral email sent successfully!");
-      navigate("/LoyaltyMember");
+      navigate("/shop/home");
     } catch (error) {
       console.error("Error sending referral email:", error);
       alert("Failed to send referral email. Please try again.");
@@ -30,7 +30,7 @@ const ReferAFriend = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-200 to-blue-400">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800">
           Refer a Friend

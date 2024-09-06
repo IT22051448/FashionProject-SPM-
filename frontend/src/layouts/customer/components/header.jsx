@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { checkLoyaltyCustomer } from "../../../redux/loyaltySlice/loyaltySlice";
 import { logoutUser } from "../../../redux/authSlice"; // Adjusted import path
-import { AlignJustify, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 
 const ShoppingHeader = () => {
   const navigate = useNavigate();
@@ -34,7 +34,9 @@ const ShoppingHeader = () => {
 
   return (
     <header className="bg-gray-800 text-white py-4 px-6 flex items-center">
-      <div className="text-2xl font-bold flex-shrink-0">Fashion Industry</div>
+      <Link to="/shop/home" className="text-2xl font-bold flex-shrink-0">
+        Fashion Industry
+      </Link>
       <div className="flex-grow"></div>
       <nav className="flex items-center space-x-8">
         <Link to="/about" className="hover:underline">

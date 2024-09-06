@@ -100,7 +100,7 @@ const ViewLoyaltyPromos = () => {
 
   return (
     <div className="flex-grow flex justify-center items-start p-4">
-      <div className="w-full md:w-11/12 lg:w-5/6 xl:w-2/3 relative">
+      <div className="w-full md:w-11/12 lg:w-5/6 xl:w-3/4 relative border-2 border-black">
         <div className="p-8 border border-gray-300 rounded-lg shadow-lg bg-white">
           <h1 className="text-center text-4xl font-bold mb-6 text-black">
             Available Promo Codes

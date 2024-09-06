@@ -7,7 +7,7 @@ const AdminLayout = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
 
   return (
-    <div className="flex min-h-screen w-full ">
+    <div className="flex min-h-screen w-full bg-gradient-to-r from-gray-100 to-gray-300 border-2 border-black">
       {/* Side Bar */}
       <AdminSidebar open={openSidebar} setOpen={setOpenSidebar} />
       <div className="flex flex-1 flex-col">

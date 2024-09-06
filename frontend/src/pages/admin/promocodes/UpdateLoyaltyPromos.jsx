@@ -70,7 +70,7 @@ const UpdateLoyaltyPromos = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 border-2 border-black">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Update Promo Code</h1>
       </div>
@@ -157,12 +157,20 @@ const UpdateLoyaltyPromos = () => {
             className="w-full px-3 py-2 border rounded"
           />
         </div>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mr-4"
-        >
-          Update Promo Code
-        </button>
+        <div className="flex justify-between mt-6">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+          >
+            Update Promo Code
+          </button>
+          <button
+            onClick={() => navigate("/admin/view-promos")}
+            className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600"
+          >
+            Go Back
+          </button>
+        </div>
       </form>
     </div>
   );
