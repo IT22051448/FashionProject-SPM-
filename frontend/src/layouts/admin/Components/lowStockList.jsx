@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Badge } from "@/components/ui/badge";
-import { fetchAllStock } from "@/redux/stockSlice";
+import { fetchLowStock } from "@/redux/stockSlice";
 import {
   Table,
   TableBody,
@@ -11,19 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-function AdminStockList() {
+function LowStockList() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchAllStock());
+    dispatch(fetchLowStock());
   }, [dispatch]);
 
-  const { stockList } = useSelector((state) => state.stock);
-  
-  //console.log(stockList);
-  
+  const { lowStockList } = useSelector((state) => state.stock);
 
-  const stockArray = stockList?.stocks || [];
+  // Access lowStockItems array correctly from lowStockList
+  const lowArray = lowStockList?.lowStockItems || [];
 
   return (
     <div>
@@ -32,7 +30,7 @@ function AdminStockList() {
           <TableRow>
             <TableHead>Item ID</TableHead>
             <TableHead>Title</TableHead>
-            <TableHead>Stock Description</TableHead>
+
             <TableHead>Stock Price</TableHead>
             <TableHead>Supplier</TableHead>
             <TableHead>Stock Count</TableHead>
@@ -42,24 +40,16 @@ function AdminStockList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {stockArray.length > 0 ? (
-            stockArray.map((stockItem) => (
+          {lowArray.length > 0 ? (
+            lowArray.map((stockItem) => (
               <TableRow key={stockItem._id}>
                 <TableCell>{stockItem?.itemId}</TableCell>
                 <TableCell>{stockItem?.title}</TableCell>
-                <TableCell>{stockItem?.description}</TableCell>
+
                 <TableCell>{stockItem?.price}</TableCell>
                 <TableCell>{stockItem?.supplier}</TableCell>
                 <TableCell>
-                  <Badge
-                    className={`py-1 px-3 ${
-                      stockItem?.totalStock > 50
-                        ? "bg-green-600"
-                        : stockItem?.totalStock < 50
-                        ? "bg-red-700"
-                        : "bg-black"
-                    }`}
-                  >
+                  <Badge className="py-1 px-3 bg-red-700">
                     {stockItem?.totalStock}
                   </Badge>
                 </TableCell>
@@ -68,7 +58,7 @@ function AdminStockList() {
           ) : (
             <TableRow>
               <TableCell colSpan={7} className="text-center">
-                No stock available.
+                No low stock items found.
               </TableCell>
             </TableRow>
           )}
@@ -78,4 +68,4 @@ function AdminStockList() {
   );
 }
 
-export default AdminStockList;
+export default LowStockList;

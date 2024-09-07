@@ -1,6 +1,9 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
 import {
   Sheet,
   SheetContent,
@@ -11,8 +14,10 @@ import CommonForm from "@/components/common/form";
 import { addStockFormElements } from "@/config";
 import { addNewStock, fetchAllStock } from "@/redux/stockSlice";
 import AdminStockList from "@/layouts/admin/Components/adminStockList";
+import LLowStockList from "@/layouts/admin/Components/lowStockList";
 
 import { useToast } from "@/hooks/use-toast";
+
 const initialFormData = {
   title: "",
   description: "",
@@ -26,8 +31,7 @@ const initialFormData = {
 function Admininventory() {
   const [openAddStockDialog, setOpenAddStockDialog] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
-
-  const { stockList } = useSelector((state) => state.stock); // Correctly access stockList
+  const [showLowStock, setShowLowStock] = useState(false); // State to manage the switch
 
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -43,7 +47,6 @@ function Admininventory() {
         ...formData,
       })
     ).then((data) => {
-      console.log(data);
       if (data) {
         dispatch(fetchAllStock());
         setFormData(initialFormData);
@@ -54,7 +57,10 @@ function Admininventory() {
       }
     });
   };
-  //console.log(stockList, "stockList");
+
+  const handleSwitchChange = (checked) => {
+    setShowLowStock(checked);
+  };
 
   return (
     <div>
@@ -64,8 +70,6 @@ function Admininventory() {
             Add New Stock
           </Button>
         </div>
-
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4"></div>
 
         <Sheet
           open={openAddStockDialog}
@@ -88,7 +92,21 @@ function Admininventory() {
           </SheetContent>
         </Sheet>
       </Fragment>
-      <AdminStockList />
+
+      {/* Centering the Switch and Label */}
+      <div className="flex items-center justify-center space-x-2 mt-5">
+        <Switch
+          id="view-low-stocks"
+          checked={showLowStock}
+          onCheckedChange={handleSwitchChange}
+        />
+        <Label htmlFor="view-low-stocks">Click to View Low Stocks</Label>
+      </div>
+
+      <div className="mt-5">
+        {/* Conditionally render based on switch state */}
+        {showLowStock ? <LLowStockList /> : <AdminStockList />}
+      </div>
     </div>
   );
 }

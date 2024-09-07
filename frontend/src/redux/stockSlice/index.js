@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Define the initial state
 const initialState = {
   isLoading: false,
   stockList: [],
+  lowStockList: [], 
 };
 
+// Thunk to add new stock
 export const addNewStock = createAsyncThunk(
   "adminStock/addNewStock",
   async (formData) => {
@@ -23,6 +24,7 @@ export const addNewStock = createAsyncThunk(
   }
 );
 
+// Thunk to fetch all stock
 export const fetchAllStock = createAsyncThunk(
   "adminStock/fetchAllStock",
   async () => {
@@ -33,25 +35,48 @@ export const fetchAllStock = createAsyncThunk(
   }
 );
 
+// Thunk to fetch low stock
+export const fetchLowStock = createAsyncThunk(
+  "adminStock/fetchLowStock", // Changed the action type to avoid conflicts
+  async () => {
+    const result = await axios.get("http://localhost:3000/api/stock/fetch-low");
+    return result?.data;
+  }
+);
+
 // Create the slice
 const adminStockSlice = createSlice({
   name: "adminStock",
-  initialState, 
+  initialState,
   reducers: {}, // No synchronous reducers for now
   extraReducers: (builder) => {
     builder
+      // Fetch all stock
       .addCase(fetchAllStock.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchAllStock.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.isLoading = false;
         state.stockList = action.payload;
       })
       .addCase(fetchAllStock.rejected, (state) => {
         state.isLoading = false;
         state.stockList = [];
+      })
+
+      // Fetch low stock
+      .addCase(fetchLowStock.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchLowStock.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.lowStockList = action.payload; 
+        console.log(action.payload); // Log the low stock items
+        
+      })
+      .addCase(fetchLowStock.rejected, (state) => {
+        state.isLoading = false;
+        state.lowStockList = [];
       });
   },
 });
