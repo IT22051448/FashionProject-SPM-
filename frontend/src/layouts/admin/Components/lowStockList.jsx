@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
 import { fetchLowStock } from "@/redux/stockSlice";
 import {
   Table,
@@ -30,12 +32,14 @@ function LowStockList() {
           <TableRow>
             <TableHead>Item ID</TableHead>
             <TableHead>Title</TableHead>
-
             <TableHead>Stock Price</TableHead>
             <TableHead>Supplier</TableHead>
             <TableHead>Stock Count</TableHead>
             <TableHead>
               <span className="sr-only">Details</span>
+            </TableHead>
+            <TableHead>
+              <span className="sr-only">Order</span>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -45,13 +49,15 @@ function LowStockList() {
               <TableRow key={stockItem._id}>
                 <TableCell>{stockItem?.itemId}</TableCell>
                 <TableCell>{stockItem?.title}</TableCell>
-
                 <TableCell>{stockItem?.price}</TableCell>
                 <TableCell>{stockItem?.supplier}</TableCell>
                 <TableCell>
                   <Badge className="py-1 px-3 bg-red-700">
                     {stockItem?.totalStock}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  <Button onClick={() => handleOrder(stockItem)}>Order</Button>
                 </TableCell>
               </TableRow>
             ))
@@ -66,6 +72,11 @@ function LowStockList() {
       </Table>
     </div>
   );
+}
+
+function handleOrder(stockItem) {
+  // Implement the logic for handling the order action here
+  console.log("Ordering item:", stockItem.title);
 }
 
 export default LowStockList;
