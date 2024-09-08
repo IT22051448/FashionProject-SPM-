@@ -1,82 +1,69 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deletePromoCode,
+  fetchPromoCodes,
+} from "@/redux/loyaltySlice/promoSlice";
 
 const ViewLoyaltyPromos = () => {
-  const [promoCodes, setPromoCodes] = useState([]);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { promoCodes, error, loading } = useSelector((state) => state.promo);
   const navigate = useNavigate();
 
-  // Fetch all promo codes
-  const fetchPromoCodes = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/loyalty/promo-codes"
-      );
-      setPromoCodes(response.data);
-    } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          "An error occurred while fetching promo codes."
-      );
-    }
-  };
-
   useEffect(() => {
-    fetchPromoCodes();
-  }, []);
+    dispatch(fetchPromoCodes());
+  }, [dispatch]);
 
-  // Helper function to format date
+  // Format date utility function
   const formatDate = (dateString) => {
     if (!dateString) return "Does not Expire";
     const options = { day: "2-digit", month: "long", year: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Group promo codes by tier
-  const groupedPromoCodes = promoCodes.reduce((acc, promo) => {
-    const { tier } = promo;
-    if (!acc[tier]) {
-      acc[tier] = [];
-    }
-    acc[tier].push(promo);
-    return acc;
-  }, {});
+  // Group promo codes by tier utility function
+  const groupPromoCodesByTier = (promoCodes) => {
+    return promoCodes.reduce((acc, promo) => {
+      const { tier } = promo;
+      if (!acc[tier]) {
+        acc[tier] = [];
+      }
+      acc[tier].push(promo);
+      return acc;
+    }, {});
+  };
 
-  // Determine background color and border color based on tier
+  // Get styles for tier utility function
   const getStylesForTier = (tier) => {
-    switch (tier) {
-      case "Gold":
-        return {
-          backgroundColor: "bg-yellow-400 bg-opacity-50",
-          borderColor: "border-yellow-600",
-        };
-      case "Silver":
-        return {
-          backgroundColor: "bg-gray-300",
-          borderColor: "border-gray-600",
-        };
-      case "Bronze":
-        return {
-          backgroundColor: "bg-orange-400 bg-opacity-50",
-          borderColor: "border-orange-600",
-        };
-      case "Platinum":
-        return {
-          backgroundColor: "bg-blue-400 bg-opacity-50",
-          borderColor: "border-blue-600",
-        };
-      case "Grey":
-        return {
-          backgroundColor: "bg-gray-500 bg-opacity-50",
-          borderColor: "border-gray-700",
-        };
-      default:
-        return {
-          backgroundColor: "bg-white",
-          borderColor: "border-gray-300",
-        };
-    }
+    const styles = {
+      Gold: {
+        backgroundColor: "bg-yellow-400 bg-opacity-50",
+        borderColor: "border-yellow-600",
+      },
+      Silver: {
+        backgroundColor: "bg-gray-300",
+        borderColor: "border-gray-600",
+      },
+      Bronze: {
+        backgroundColor: "bg-orange-400 bg-opacity-50",
+        borderColor: "border-orange-600",
+      },
+      Platinum: {
+        backgroundColor: "bg-blue-400 bg-opacity-50",
+        borderColor: "border-blue-600",
+      },
+      Grey: {
+        backgroundColor: "bg-gray-500 bg-opacity-50",
+        borderColor: "border-gray-700",
+      },
+    };
+    return (
+      styles[tier] || {
+        backgroundColor: "bg-white",
+        borderColor: "border-gray-300",
+      }
+    );
   };
 
   // Handle update button click
@@ -85,18 +72,14 @@ const ViewLoyaltyPromos = () => {
   };
 
   // Handle delete button click
-  const handleDelete = async (promoId) => {
-    try {
-      await axios.delete(
-        `http://localhost:5000/api/loyalty/promo-codes/${promoId}`
-      );
-      setPromoCodes(promoCodes.filter((promo) => promo._id !== promoId));
-    } catch (err) {
-      setError("Failed to delete promo code.");
-    }
+  const handleDelete = (promoId) => {
+    dispatch(deletePromoCode(promoId));
   };
 
+  if (loading) return <div className="text-center">Loading...</div>;
   if (error) return <div className="text-red-600 text-center">{error}</div>;
+
+  const groupedPromoCodes = groupPromoCodesByTier(promoCodes);
 
   return (
     <div className="flex-grow flex justify-center items-start p-4">

@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import AuthLayout from "./layouts/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthSignup from "./pages/auth/signup";
@@ -34,6 +34,7 @@ function App() {
     <>
       <ToastContainer />
       <Routes>
+        <Route path="/" element={<Navigate to="/auth/login" />} />
         <Route
           path="/auth"
           element={

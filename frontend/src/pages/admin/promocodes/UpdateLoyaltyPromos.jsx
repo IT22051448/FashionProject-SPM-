@@ -1,73 +1,79 @@
-import React, { useEffect, useState } from "react";
+// src/components/UpdateLoyaltyPromos.js
+
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchPromoCodeById,
+  updatePromoCode,
+} from "@/redux/loyaltySlice/promoSlice"; // Adjust the import path
+import { promoFormControls } from "@/config/promoFormConfig";
+import { useForm } from "react-hook-form";
 
 const UpdateLoyaltyPromos = () => {
-  const { id } = useParams(); // Get the promo code ID from URL params
-  const [code, setCode] = useState("");
-  const [description, setDescription] = useState("");
-  const [tier, setTier] = useState("");
-  const [expiresAt, setExpiresAt] = useState("");
-  const [discountPercentage, setDiscountPercentage] = useState("");
-  const [discountAmount, setDiscountAmount] = useState("");
-  const [error, setError] = useState(null);
+  const { id } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { promoCode, loading, error } = useSelector((state) => state.promo);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
-    // Fetch the current promo code data when the component mounts
-    const fetchPromoCode = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/loyalty/promocodes/${id}`
-        );
-        const promo = response.data;
-        console.log("Fetched promo code data:", promo);
+    dispatch(fetchPromoCodeById(id));
+  }, [id, dispatch]);
 
-        setCode(promo.code || "");
-        setDescription(promo.description || "");
-        setTier(promo.tier || "");
-        setExpiresAt(
-          promo.expiresAt
-            ? new Date(promo.expiresAt).toISOString().split("T")[0]
-            : ""
-        );
-        setDiscountPercentage(promo.discountPercentage || "");
-        setDiscountAmount(promo.discountAmount || "");
-      } catch (error) {
-        setError("Failed to fetch promo code details.");
-        console.error("Error fetching promo code data:", error);
-      }
-    };
-
-    fetchPromoCode();
-  }, [id]);
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-
-    const promoData = {
-      code,
-      description,
-      tier,
-      expiresAt: expiresAt ? new Date(expiresAt) : null,
-      discountPercentage: discountPercentage
-        ? parseFloat(discountPercentage)
-        : null,
-      discountAmount: discountAmount ? parseFloat(discountAmount) : null,
-    };
-
-    try {
-      await axios.put(
-        `http://localhost:5000/api/loyalty/promocodes/${id}`,
-        promoData
+  useEffect(() => {
+    if (promoCode) {
+      setValue("code", promoCode.code);
+      setValue("description", promoCode.description);
+      setValue("tier", promoCode.tier);
+      setValue(
+        "startDate",
+        promoCode.startDate
+          ? new Date(promoCode.startDate).toISOString().split("T")[0]
+          : ""
       );
-      alert("Promo code updated successfully!");
-      navigate("/admin/view-promos");
-    } catch (error) {
-      console.error("Error updating promo code:", error);
-      alert("Error updating promo code. Please try again.");
+      setValue(
+        "expiresAt",
+        promoCode.expiresAt
+          ? new Date(promoCode.expiresAt).toISOString().split("T")[0]
+          : ""
+      );
+      setValue("discountPercentage", promoCode.discountPercentage);
+      setValue("discountAmount", promoCode.discountAmount);
     }
+  }, [promoCode, setValue]);
+
+  const onSubmit = (data) => {
+    const promoData = {
+      ...data,
+      startDate: data.startDate ? new Date(data.startDate) : null,
+      expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
+      discountPercentage: data.discountPercentage
+        ? parseFloat(data.discountPercentage)
+        : null,
+      discountAmount: data.discountAmount
+        ? parseFloat(data.discountAmount)
+        : null,
+    };
+
+    dispatch(updatePromoCode({ id, promoData }))
+      .unwrap()
+      .then(() => {
+        alert("Promo code updated successfully!");
+        navigate("/admin/view-promos");
+      })
+      .catch(() => {
+        alert("Error updating promo code. Please try again.");
+      });
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-600 mb-4">{error}</div>;
 
   return (
     <div className="container mx-auto p-4 border-2 border-black">
@@ -75,88 +81,45 @@ const UpdateLoyaltyPromos = () => {
         <h1 className="text-2xl font-bold">Update Promo Code</h1>
       </div>
 
-      {error && <div className="text-red-600 mb-4">{error}</div>}
-
-      <form onSubmit={handleUpdate} className="bg-white p-6 rounded shadow-md">
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Code
-          </label>
-          <input
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Description
-          </label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Tier
-          </label>
-          <select
-            value={tier}
-            onChange={(e) => setTier(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            required
-          >
-            <option value="">Select Tier</option>
-            <option value="Grey">Grey</option>
-            <option value="Bronze">Bronze</option>
-            <option value="Silver">Silver</option>
-            <option value="Gold">Gold</option>
-            <option value="Platinum">Platinum</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Discount Percentage (optional)
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            value={discountPercentage}
-            onChange={(e) => setDiscountPercentage(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            placeholder="e.g., 10 for 10%"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Discount Amount (optional)
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            value={discountAmount}
-            onChange={(e) => setDiscountAmount(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-            placeholder="e.g., 200 for 200 LKR"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Expiry Date
-          </label>
-          <input
-            type="date"
-            value={expiresAt}
-            onChange={(e) => setExpiresAt(e.target.value)}
-            className="w-full px-3 py-2 border rounded"
-          />
-        </div>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-white p-6 rounded shadow-md"
+      >
+        {promoFormControls.map((control) => (
+          <div className="mb-4" key={control.name}>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              {control.label}
+            </label>
+            {control.componentType === "input" && (
+              <input
+                {...register(control.name, { required: control.required })}
+                type={control.type}
+                placeholder={control.placeholder}
+                step={control.step}
+                className={`w-full px-3 py-2 border rounded ${
+                  errors[control.name] ? "border-red-500" : ""
+                }`}
+              />
+            )}
+            {control.componentType === "select" && (
+              <select
+                {...register(control.name, { required: control.required })}
+                className={`w-full px-3 py-2 border rounded ${
+                  errors[control.name] ? "border-red-500" : ""
+                }`}
+              >
+                {control.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
+            {errors[control.name] && (
+              <span className="text-red-500 text-sm">{`${control.label} is required`}</span>
+            )}
+          </div>
+        ))}
         <div className="flex justify-between mt-6">
           <button
             type="submit"
@@ -165,6 +128,7 @@ const UpdateLoyaltyPromos = () => {
             Update Promo Code
           </button>
           <button
+            type="button"
             onClick={() => navigate("/admin/view-promos")}
             className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600"
           >
