@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { createNewOrder } from "@/redux/orderSlice";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.cart);
@@ -16,7 +15,6 @@ function ShoppingCheckout() {
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   console.log(currentSelectedAddress, "cartItems");
 
@@ -84,9 +82,8 @@ function ShoppingCheckout() {
 
     dispatch(createNewOrder(orderData)).then((data) => {
       console.log(data, "order creation succesfull");
-      if (data?.payload?.success) {
+      if (data?.success) {
         setIsPaymemntStart(true);
-        navigate("/shop/profile");
       } else {
         setIsPaymemntStart(false);
       }
@@ -121,7 +118,7 @@ function ShoppingCheckout() {
           </div>
           <div className="mt-4 w-full">
             <Button onClick={handleInitiatePaypalPayment} className="w-full">
-              {isPaymentStart ? "Checkout out" : "Checkout"}
+              {isPaymentStart ? "Processing Payment" : "Checkout wiht Paypal"}
             </Button>
           </div>
         </div>

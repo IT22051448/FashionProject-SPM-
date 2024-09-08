@@ -4,6 +4,8 @@ import axios from "axios";
 const initialState = {
   orderList: [],
   orderDetails: null,
+  approvalURL: null,
+  isLoading: false,
 };
 
 export const createNewOrder = createAsyncThunk(

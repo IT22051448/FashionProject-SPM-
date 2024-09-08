@@ -2,6 +2,7 @@ import Order from "../models/order.model";
 import logger from "../../utils/logger";
 import Product from "../models/product.model";
 import Cart from "../models/cart.model";
+import paypal from "../../utils/paypal";
 
 const orderController = {
   async createOrder(req, res) {
@@ -21,88 +22,75 @@ const orderController = {
         cartId,
       } = req.body;
 
-      //   const create_payment_json = {
-      //     intent: "sale",
-      //     payer: {
-      //       payment_method: "paypal",
-      //     },
-      //     redirect_urls: {
-      //       return_url: "http://localhost:5173/shop/paypal-return",
-      //       cancel_url: "http://localhost:5173/shop/paypal-cancel",
-      //     },
-      //     transactions: [
-      //       {
-      //         item_list: {
-      //           items: cartItems.map(item => ({
-      //             name: item.title,
-      //             sku: item.productId,
-      //             price: item.price.toFixed(2),
-      //             currency: "USD",
-      //             quantity: item.quantity,
-      //           })),
-      //         },
-      //         amount: {
-      //           currency: "USD",
-      //           total: totalAmount.toFixed(2),
-      //         },
-      //         description: "description",
-      //       },
-      //     ],
-      //   };
+      const create_payment_json = {
+        intent: "sale",
+        payer: {
+          payment_method: "paypal",
+        },
+        redirect_urls: {
+          return_url: "http://localhost:5173/shop/paypal-return",
+          cancel_url: "http://localhost:5173/shop/paypal-cancel",
+        },
+        transactions: [
+          {
+            item_list: {
+              items: cartItems.map(item => ({
+                name: item.title,
+                sku: item.productId,
+                price: item.price.toFixed(2),
+                currency: "USD",
+                quantity: item.quantity,
+              })),
+            },
+            amount: {
+              currency: "USD",
+              total: totalAmount.toFixed(2),
+            },
+            description: "description",
+          },
+        ],
+      };
 
-      //   paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
-      //     if (error) {
-      //       console.log(error);
+      paypal.payment.create(
+        create_payment_json,
+        async function (error, payment) {
+          if (error) {
+            logger.error(error);
 
-      //       return res.status(500).json({
-      //         success: false,
-      //         message: "Error while creating paypal payment",
-      //       });
-      //     } else {
+            return res.status(500).json({
+              success: false,
+              message: "Error while processing payment",
+            });
+          } else {
+            const newlyCreatedOrder = new Order({
+              userId,
+              cartId,
+              cartItems,
+              addressInfo,
+              orderStatus,
+              paymentMethod,
+              paymentStatus,
+              totalAmount,
+              orderDate,
+              orderUpdateDate,
+              paymentId,
+              payerId,
+            });
 
-      const newlyCreatedOrder = new Order({
-        userId,
-        cartId,
-        cartItems,
-        addressInfo,
-        orderStatus,
-        paymentMethod,
-        paymentStatus,
-        totalAmount,
-        orderDate,
-        orderUpdateDate,
-        paymentId,
-        payerId,
-      });
+            const order = await newlyCreatedOrder.save();
 
-      for (let item of newlyCreatedOrder.cartItems) {
-        let product = await Product.findById(item.productId);
+            const approvalURL = payment.links.find(
+              link => link.rel === "approval_url"
+            ).href;
 
-        if (!product) {
-          return res.status(404).json({
-            success: false,
-            message: `Not enough stock for this product ${product.title}`,
-          });
+            res.status(201).json({
+              success: true,
+              approvalURL,
+              orderId: order._id,
+            });
+          }
         }
-
-        product.totalStock -= item.quantity;
-
-        await product.save();
-      }
-
-      const order = await newlyCreatedOrder.save();
-
-      logger.info(`Order created successfully ${order._id}`);
-
-      const getCartId = order.cartId;
-      logger.info("cart deleted");
-      await Cart.findByIdAndDelete(getCartId);
-
-      res.status(201).json({
-        success: true,
-        // approvalURL,
-        orderId: newlyCreatedOrder._id,
-      });
+      );
     } catch (e) {
       console.log(e);
       res.status(500).json({
