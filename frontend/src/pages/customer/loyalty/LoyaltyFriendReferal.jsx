@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { referAFriend } from "../../../redux/loyaltySlice/loyaltySlice";
 
 const ReferAFriend = () => {
   const [referredEmail, setReferredEmail] = useState("");
   const userEmail = useSelector((state) => state.auth.user?.email);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleRefer = async () => {
@@ -15,12 +16,9 @@ const ReferAFriend = () => {
         return;
       }
 
-      await axios.post("http://localhost:5000/api/referral/refer", {
-        // Check if this URL is correct
-        referrerEmail: userEmail,
-        referredEmail,
-      });
-
+      await dispatch(
+        referAFriend({ referrerEmail: userEmail, referredEmail })
+      ).unwrap();
       alert("Referral email sent successfully!");
       navigate("/shop/home");
     } catch (error) {
