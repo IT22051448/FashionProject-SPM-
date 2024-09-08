@@ -1,25 +1,17 @@
-import React from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { logOutUser } from "@/redux/authSlice";
+import { persistor } from "@/redux/store";
 import { AlignJustify, LogOut } from "lucide-react";
-import { logoutUser } from "../../../redux/authSlice";
+import { useDispatch } from "react-redux";
 
 // eslint-disable-next-line react/prop-types
 const AdminHeader = ({ setOpen }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logoutUser())
-      .unwrap()
-      .then(() => {
-        navigate("/login");
-      })
-      .catch((error) => {
-        console.error("Error logging out:", error);
-      });
-  };
+  function handleLogout() {
+    dispatch(logOutUser());
+    persistor.purge();
+  }
 
   return (
     <header className="flex items-center justify-between px-4 py-3 bg-background border-b">

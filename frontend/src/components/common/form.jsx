@@ -2,8 +2,14 @@
 import PropTypes from "prop-types";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Select, SelectTrigger, SelectValue } from "../ui/select";
-import { SelectContent, SelectItem } from "@radix-ui/react-select";
+
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+  SelectContent,
+} from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 
@@ -24,32 +30,35 @@ const CommonForm = ({
     let element = null;
     const value = formData[control.name] || "";
 
-    const inputProps = {
-      name: control.name,
-      placeholder: control.placeholder,
-      id: control.name,
-      type: control.type,
-      value: value,
-      onChange: (e) =>
-        setFormData({ ...formData, [control.name]: e.target.value }),
-      readOnly: control.readOnly || false,
-    };
-
     switch (control.componentType) {
       case types.INPUT:
-        element = <Input {...inputProps} />;
+        element = (
+          <Input
+            name={control.name}
+            placeholder={control.placeholder}
+            id={control.name}
+            type={control.type}
+            value={value}
+            onChange={(e) =>
+              setFormData({ ...formData, [control.name]: e.target.value })
+            }
+          />
+        );
         break;
 
       case types.SELECT:
         element = (
           <Select
             onValueChange={(value) =>
-              setFormData({ ...formData, [control.name]: value })
+              setFormData({
+                ...formData,
+                [control.name]: value,
+              })
             }
             value={value}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={control.placeholder} />
+              <SelectValue placeholder={control.label} />
             </SelectTrigger>
             <SelectContent>
               {control.options && control.options.length > 0
@@ -79,7 +88,18 @@ const CommonForm = ({
         break;
 
       default:
-        element = <Input {...inputProps} />;
+        element = (
+          <Input
+            name={control.name}
+            placeholder={control.placeholder}
+            id={control.name}
+            type={control.type}
+            value={value}
+            onChange={(e) =>
+              setFormData({ ...formData, [control.name]: e.target.value })
+            }
+          />
+        );
     }
 
     return element;

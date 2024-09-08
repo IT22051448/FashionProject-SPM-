@@ -13,7 +13,7 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/register",
+      `${import.meta.env.VITE_API_URL}auth/register`,
       formData,
       {
         withCredentials: true,
@@ -25,29 +25,13 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk("auth/login", async (formData) => {
   const response = await axios.post(
-    "http://localhost:5000/api/auth/login",
+    `${import.meta.env.VITE_API_URL}auth/login`,
     formData,
     {
       withCredentials: true,
     }
   );
   return response.data;
-});
-
-export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  try {
-    await fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-
-    localStorage.removeItem("persist:root");
-
-    window.location.href = "/auth/login";
-  } catch (error) {
-    console.error("Logout error:", error);
-    throw error;
-  }
 });
 
 export const clearNotifications = createAsyncThunk(
@@ -76,6 +60,11 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.isAuthenticated = action.payload.isAuthenticated;
     },
+    logOutUser: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -99,28 +88,14 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        if (action.payload.success) {
-          state.user = action.payload.user;
-          state.token = action.payload.token;
-          state.isAuthenticated = true;
-        } else {
-          state.user = null;
-          state.token = null;
-          state.isAuthenticated = false;
-        }
+        state.user = action.payload.success ? action.payload.user : null;
+        state.token = action.payload.success ? action.payload.token : null;
+        state.isAuthenticated = action.payload.success ? true : false;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
-        state.error = action.error.message;
-      })
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.token = null;
-        state.isAuthenticated = false;
-      })
-      .addCase(logoutUser.rejected, (state, action) => {
         state.error = action.error.message;
       })
       .addCase(clearNotifications.fulfilled, (state) => {
@@ -134,5 +109,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUserInfo } = authSlice.actions;
+export const { setUserInfo, logOutUser } = authSlice.actions;
 export default authSlice.reducer;

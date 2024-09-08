@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   notifications: { type: [String], default: [] },
+  created_date: {
+    type: Date,
+    required: true,
+  },
 
   last_login: {
     type: Date,

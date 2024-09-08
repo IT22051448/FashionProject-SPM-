@@ -157,7 +157,7 @@ const authController = {
   async logout(req, res) {
     try {
       // Clear the authentication token or session cookie
-      res.clearCookie("token"); // Assumes the token is stored in a cookie named 'token'
+      res.clearCookie("token");
 
       res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
