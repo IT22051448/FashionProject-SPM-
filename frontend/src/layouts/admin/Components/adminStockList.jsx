@@ -19,9 +19,8 @@ function AdminStockList() {
   }, [dispatch]);
 
   const { stockList } = useSelector((state) => state.stock);
-  
+
   //console.log(stockList);
-  
 
   const stockArray = stockList?.stocks || [];
 
@@ -49,7 +48,9 @@ function AdminStockList() {
                 <TableCell>{stockItem?.title}</TableCell>
                 <TableCell>{stockItem?.description}</TableCell>
                 <TableCell>{stockItem?.price}</TableCell>
-                <TableCell>{stockItem?.supplier}</TableCell>
+                <TableCell>
+                  {stockItem?.supplier ? stockItem.supplier.name : "Unknown"}
+                </TableCell>
                 <TableCell>
                   <Badge
                     className={`py-1 px-3 ${

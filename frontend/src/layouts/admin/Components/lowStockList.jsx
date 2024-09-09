@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import { fetchLowStock } from "@/redux/stockSlice";
 import {
   Table,
@@ -50,7 +49,7 @@ function LowStockList() {
                 <TableCell>{stockItem?.itemId}</TableCell>
                 <TableCell>{stockItem?.title}</TableCell>
                 <TableCell>{stockItem?.price}</TableCell>
-                <TableCell>{stockItem?.supplier}</TableCell>
+                <TableCell>{stockItem?.supplier?.name || "N/A"}</TableCell>
                 <TableCell>
                   <Badge className="py-1 px-3 bg-red-700">
                     {stockItem?.totalStock}

@@ -1,9 +1,8 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-
 import {
   Sheet,
   SheetContent,
@@ -13,9 +12,9 @@ import {
 import CommonForm from "@/components/common/form";
 import { addStockFormElements } from "@/config";
 import { addNewStock, fetchAllStock } from "@/redux/stockSlice";
+import { fetchAllSuppliers } from "@/redux/supplierSlice";
 import AdminStockList from "@/layouts/admin/Components/adminStockList";
-import LLowStockList from "@/layouts/admin/Components/lowStockList";
-
+import LowStockList from "@/layouts/admin/Components/lowStockList";
 import { useToast } from "@/hooks/use-toast";
 
 const initialFormData = {
@@ -31,14 +30,35 @@ const initialFormData = {
 function Admininventory() {
   const [openAddStockDialog, setOpenAddStockDialog] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
-  const [showLowStock, setShowLowStock] = useState(false); // State to manage the switch
+  const [showLowStock, setShowLowStock] = useState(false);
 
   const dispatch = useDispatch();
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log("Dispatching fetchAllStock and fetchAllSuppliers");
     dispatch(fetchAllStock());
+    dispatch(fetchAllSuppliers());
   }, [dispatch]);
+
+  const {
+    supplierList = [], // Access supplierList directly
+    isLoading,
+    error,
+  } = useSelector((state) => state.supplier);
+
+  useEffect(() => {
+    console.log("Supplier List:", supplierList);
+    console.log("Is Loading:", isLoading);
+    console.log("Error:", error);
+  }, [supplierList, isLoading, error]);
+
+  const supplierOptions = Array.isArray(supplierList)
+    ? supplierList.map((supplier) => ({
+        value: supplier._id, // Assuming _id is the identifier
+        label: supplier.name, // Assuming name is the display value
+      }))
+    : [];
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -71,10 +91,7 @@ function Admininventory() {
           </Button>
         </div>
 
-        <Sheet
-          open={openAddStockDialog}
-          onOpenChange={setOpenAddStockDialog} // Pass the state setter function directly
-        >
+        <Sheet open={openAddStockDialog} onOpenChange={setOpenAddStockDialog}>
           <SheetContent side="right" className="overflow-auto">
             <SheetHeader>
               <SheetTitle>Add New Stock</SheetTitle>
@@ -87,13 +104,13 @@ function Admininventory() {
                 setFormData={setFormData}
                 buttonText="Add Stock"
                 formControls={addStockFormElements}
+                supplierOptions={supplierOptions}
               />
             </div>
           </SheetContent>
         </Sheet>
       </Fragment>
 
-      {/* Centering the Switch and Label */}
       <div className="flex items-center justify-center space-x-2 mt-5">
         <Switch
           id="view-low-stocks"
@@ -104,8 +121,7 @@ function Admininventory() {
       </div>
 
       <div className="mt-5">
-        {/* Conditionally render based on switch state */}
-        {showLowStock ? <LLowStockList /> : <AdminStockList />}
+        {showLowStock ? <LowStockList /> : <AdminStockList />}
       </div>
     </div>
   );

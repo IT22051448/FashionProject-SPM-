@@ -48,7 +48,7 @@ export const fetchLowStock = createAsyncThunk(
 const adminStockSlice = createSlice({
   name: "adminStock",
   initialState,
-  reducers: {}, // No synchronous reducers for now
+  reducers: {}, 
   extraReducers: (builder) => {
     builder
       // Fetch all stock
