@@ -3,7 +3,7 @@ import img from "@/assets/account.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import UserCartItemsContent from "@/layouts/customer/components/cart-items";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createNewOrder } from "@/redux/orderSlice";
 import { useToast } from "@/hooks/use-toast";
 
@@ -90,9 +90,12 @@ function ShoppingCheckout() {
     });
   }
 
-  if (approvalURL) {
-    window.location.href = approvalURL;
-  }
+  useEffect(() => {
+    if (approvalURL) {
+      window.location.href = approvalURL;
+      console.log("success");
+    }
+  }, [approvalURL]);
 
   return (
     <div className="flex flex-col">
