@@ -9,8 +9,11 @@ import orderRouter from "./api/routes/order.route";
 import productRouter from "./api/routes/product.route";
 import cartRouter from "./api/routes/cart.route";
 import addressRouter from "./api/routes/address.route";
+import stockRouter from "./api/routes/stock.route";
+import mailRouter from "./api/routes/mail.route";
+import supplierRouter from "./api/routes/supplier.route";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -34,8 +37,13 @@ app.use("/api/order", orderRouter);
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
+app.use("/api/stock", stockRouter);
+app.use("/api/sendmail", mailRouter);
+app.use("/api/supplier", supplierRouter);
 
 app.listen(PORT, () => {
   logger.info(`Server is running on port: ${PORT}`);
+  console.log(`Server is running on port: ${PORT}`);
+
   connect();
 });
