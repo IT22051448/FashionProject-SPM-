@@ -54,12 +54,12 @@ function AdminOrdersView() {
             {orderList && orderList.length > 0
               ? orderList.map((orderItem, key) => (
                   <TableRow key={key}>
-                    <TableCell>{orderItem?._id}</TableCell>
+                    <TableCell>{orderItem?.orderNumber}</TableCell>
                     <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
                     <TableCell>
                       <Badge
                         className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "delivered"
+                          orderItem?.orderStatus === "confirmed"
                             ? "bg-green-500"
                             : orderItem?.orderStatus === "rejected"
                             ? "bg-red-600"
