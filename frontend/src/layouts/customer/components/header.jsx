@@ -17,7 +17,6 @@ const ShoppingHeader = () => {
   );
 
   const { isAuthenticated } = useSelector((state) => state.auth);
-
   const userEmail = useSelector((state) => state.auth.user?.email);
 
   React.useEffect(() => {
@@ -33,15 +32,6 @@ const ShoppingHeader = () => {
           <Shirt className="h-6 w-6" />
           <span className="font-bold">Fashion House</span>
         </Link>
-        {isLoyaltyCustomer ? (
-          <Link to="/shop/loyaltyMember" className="hover:underline">
-            Loyalty Profile
-          </Link>
-        ) : (
-          <Link to="/shop/loyaltySignUp" className="hover:underline">
-            Become a Loyalty Member
-          </Link>
-        )}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">
@@ -50,11 +40,11 @@ const ShoppingHeader = () => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-full max-w-xs">
-            <MenuItems />
+            <MenuItems isLoyaltyCustomer={isLoyaltyCustomer} />
           </SheetContent>
         </Sheet>
         <div className="hidden lg:block">
-          <MenuItems />
+          <MenuItems isLoyaltyCustomer={isLoyaltyCustomer} />
         </div>
         {isAuthenticated ? (
           <div>

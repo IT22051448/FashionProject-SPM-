@@ -15,6 +15,9 @@ import CheckAuth from "./components/common/check-auth";
 import { useSelector } from "react-redux";
 import ShoppingCheckout from "./pages/customer/checkout/checkout";
 import ShoppingListing from "./pages/customer/listing/listing";
+import PayPalReturn from "./pages/customer/paypal-return/paypal-return";
+import OrderSuccess from "./pages/customer/order-success/order-success";
+import PayPalCancel from "./pages/customer/paypal-cancel/paypal-cancel";
 
 import LoyaltySignUp from "./pages/customer/loyalty/LoyaltyCustomers";
 import LoyaltyReferral from "./pages/customer/loyalty/LoyaltyFriendReferal";
@@ -36,7 +39,7 @@ function App() {
     <>
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Navigate to="/auth/signup" />} />
+        <Route path="/" element={<CheckAuth />} />
         <Route
           path="/auth"
           element={
@@ -77,6 +80,9 @@ function App() {
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="paypal-return" element={<PayPalReturn />} />
+          <Route path="order-success" element={<OrderSuccess />} />
+          <Route path="paypal-cancel" element={<PayPalCancel />} />
           <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
           <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
           <Route path="LoyaltyMember" element={<LoyaltyMember />} />
