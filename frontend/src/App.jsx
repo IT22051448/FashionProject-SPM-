@@ -78,15 +78,14 @@ function App() {
         >
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
+          <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
+          <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
+          <Route path="LoyaltyMember" element={<LoyaltyMember />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="profile" element={<Profile />} />
           <Route path="paypal-return" element={<PayPalReturn />} />
           <Route path="order-success" element={<OrderSuccess />} />
           <Route path="paypal-cancel" element={<PayPalCancel />} />
-          <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
-          <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
-          <Route path="LoyaltyMember" element={<LoyaltyMember />} />
-          <Route path="checkout" element={<ShoppingCheckout />} />
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="/unauth-page" element={<UnAuthPage />} />

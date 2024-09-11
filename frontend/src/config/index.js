@@ -103,9 +103,9 @@ export const addProductFormElements = [
       { id: "nike", label: "Nike" },
       { id: "adidas", label: "Adidas" },
       { id: "puma", label: "Puma" },
-      { id: "levi", label: "Levi's" },
+      { id: "levi", label: "Levis" },
       { id: "zara", label: "Zara" },
-      { id: "h&m", label: "H&M" },
+      { id: "h&m", label: "HM" },
     ],
   },
   {

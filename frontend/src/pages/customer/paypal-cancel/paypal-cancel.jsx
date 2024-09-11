@@ -1,3 +1,4 @@
+import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/hooks/use-toast";
 import { cancelPayment, resetApprovalURL } from "@/redux/orderSlice";
 import { useEffect } from "react";
@@ -20,7 +21,11 @@ const PayPalCancel = () => {
     });
   });
 
-  return <div>Cancel Payment</div>;
+  return (
+    <div>
+      <Spinner />
+    </div>
+  );
 };
 
 export default PayPalCancel;
