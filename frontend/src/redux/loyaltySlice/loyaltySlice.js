@@ -90,9 +90,29 @@ export const fetchPromoCodes = createAsyncThunk(
   }
 );
 
+// New async thunk to update loyalty points
+export const updateLoyaltyPoints = createAsyncThunk(
+  "loyalty/updateLoyaltyPoints",
+  async ({ email, points }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:5000/api/loyalty/email/${email}/points`,
+        { points }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Loyalty slice definition
 const loyaltySlice = createSlice({
   name: "loyalty",
+  initialState: {
+    points: 0,
+    tier: "",
+  },
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -158,6 +178,16 @@ const loyaltySlice = createSlice({
         state.promoCodes = action.payload;
       })
       .addCase(fetchPromoCodes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(updateLoyaltyPoints.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customer = action.payload;
+        state.points = action.payload.points;
+        state.tier = action.payload.tier;
+      })
+      .addCase(updateLoyaltyPoints.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
       });

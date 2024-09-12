@@ -14,6 +14,7 @@ const {
   deletePromoCode,
   getPromoCodeById,
   updatePromoCodeById,
+  applyPromoCode,
 } = require("../controllers/loyaltyController");
 
 // Add a new customer
@@ -54,5 +55,8 @@ router.get("/promocodes/:id", getPromoCodeById);
 
 // Update a promo code by ID
 router.put("/promocodes/:id", updatePromoCodeById);
+
+// Route to apply promo code
+router.post("/apply-promo-code", applyPromoCode);
 
 module.exports = router;

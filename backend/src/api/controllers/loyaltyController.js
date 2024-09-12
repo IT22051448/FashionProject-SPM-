@@ -3,15 +3,15 @@ const PromoCode = require("../models/loyaltyPromos");
 
 // Helper function to determine tier based on loyalty points
 function determineTier(loyaltyPoints) {
-  if (loyaltyPoints >= 0 && loyaltyPoints <= 299) {
+  if (loyaltyPoints >= 0 && loyaltyPoints <= 199) {
     return "Grey";
-  } else if (loyaltyPoints >= 300 && loyaltyPoints <= 599) {
+  } else if (loyaltyPoints >= 200 && loyaltyPoints <= 499) {
     return "Bronze";
-  } else if (loyaltyPoints >= 600 && loyaltyPoints <= 1199) {
+  } else if (loyaltyPoints >= 500 && loyaltyPoints <= 999) {
     return "Silver";
-  } else if (loyaltyPoints >= 1200 && loyaltyPoints <= 3599) {
+  } else if (loyaltyPoints >= 1000 && loyaltyPoints <= 1999) {
     return "Gold";
-  } else if (loyaltyPoints >= 3600) {
+  } else if (loyaltyPoints >= 2000) {
     return "Platinum";
   }
 }
@@ -268,5 +268,33 @@ exports.updatePromoCodeById = async (req, res) => {
     res.json(updatedPromoCode);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.applyPromoCode = async (req, res) => {
+  const { code } = req.body;
+
+  try {
+    // Find the promo code in the database
+    const promo = await PromoCode.findOne({ code });
+
+    // If no promo code found
+    if (!promo) {
+      return res.status(400).json({ error: "Invalid promo code" });
+    }
+
+    // Check if the promo code is expired
+    if (promo.expiresAt && new Date() > new Date(promo.expiresAt)) {
+      return res.status(400).json({ error: "Promo code has expired" });
+    }
+
+    // Return the discount percentage or amount
+    res.json({
+      discountPercentage: promo.discountPercentage,
+      discountAmount: promo.discountAmount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
 };

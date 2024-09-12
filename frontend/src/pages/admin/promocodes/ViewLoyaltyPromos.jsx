@@ -57,6 +57,10 @@ const ViewLoyaltyPromos = () => {
         backgroundColor: "bg-gray-500 bg-opacity-50",
         borderColor: "border-gray-700",
       },
+      Diamond: {
+        backgroundColor: "bg-purple-400 bg-opacity-50",
+        borderColor: "border-purple-700",
+      },
     };
     return (
       styles[tier] || {
