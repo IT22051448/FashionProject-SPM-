@@ -66,6 +66,19 @@ function ShoppingCheckout() {
       return;
     }
 
+    // Check if there are items on sale in the cart
+    const hasSaleItems = cartItems.items.some(
+      (item) => item.salePrice && item.salePrice > 0
+    );
+
+    if (hasSaleItems) {
+      toast({
+        title: "Promo codes cannot be used with sale items.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/loyalty/apply-promo-code",
@@ -90,7 +103,22 @@ function ShoppingCheckout() {
         });
         return;
       }
-      setDiscountedTotal(totalCartAmount - discount);
+
+      // Calculate the new total
+      const newTotal = totalCartAmount - discount;
+
+      // Check if the new total is below zero
+      if (newTotal < 0) {
+        toast({
+          title: "Cannot apply promo code",
+          description: "Discount amount exceeds the total amount.",
+          variant: "destructive",
+        });
+
+        return;
+      }
+
+      setDiscountedTotal(newTotal);
       setPromoApplied(true);
       toast({
         title: "Discount applied successfully!",
@@ -130,10 +158,7 @@ function ShoppingCheckout() {
         productId: singleCartItem?.productId,
         title: singleCartItem?.title,
         image: singleCartItem?.image,
-        price:
-          singleCartItem?.salePrice > 0
-            ? singleCartItem?.salePrice
-            : singleCartItem?.price,
+        price: discountedTotal,
         quantity: singleCartItem?.quantity,
       })),
       addressInfo: {
@@ -188,10 +213,7 @@ function ShoppingCheckout() {
         productId: singleCartItem?.productId,
         title: singleCartItem?.title,
         image: singleCartItem?.image,
-        price:
-          singleCartItem?.salePrice > 0
-            ? singleCartItem?.salePrice
-            : singleCartItem?.price,
+        price: discountedTotal,
         quantity: singleCartItem?.quantity,
       })),
       addressInfo: {
@@ -297,6 +319,7 @@ function ShoppingCheckout() {
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
                 className="border p-2 rounded-md w-full"
+                readOnly
               />
               <Button onClick={applyPromoCode} className="flex-shrink-0">
                 Apply
