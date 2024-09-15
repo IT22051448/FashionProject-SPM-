@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { createNewOrder } from "@/redux/orderSlice";
 import { useToast } from "@/hooks/use-toast";
 import { Spinner } from "@/components/ui/spinner";
-import { updateLoyaltyPoints } from "@/redux/loyaltySlice/loyaltySlice";
+import { checkLoyaltyCustomer } from "@/redux/loyaltySlice/loyaltySlice";
 import axios from "axios";
 
 function ShoppingCheckout() {
@@ -18,14 +18,11 @@ function ShoppingCheckout() {
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
-  const [isTestOrder, setIsTestOrder] = useState(false);
-  const { tier } = useSelector((state) => state.loyalty);
-  const [previousTier, setPreviousTier] = useState(tier);
   const [promoCode, setPromoCode] = useState("");
   const [discountedTotal, setDiscountedTotal] = useState(0);
   const [promoApplied, setPromoApplied] = useState(false);
   const [discountText, setDiscountText] = useState("");
-  const [isReadOnly, setIsReadOnly] = useState(false);
+  const { isLoyaltyCustomer } = useSelector((state) => state.loyalty);
 
   console.log(currentSelectedAddress, "cartItems");
 
@@ -52,15 +49,26 @@ function ShoppingCheckout() {
     const storedPromoCode = sessionStorage.getItem("appliedPromoCode");
     if (storedPromoCode) {
       setPromoCode(storedPromoCode);
-      applyPromoCode(storedPromoCode); // Automatically apply the promo code
       sessionStorage.removeItem("appliedPromoCode"); // Clear promo code from sessionStorage
     }
   }, []);
 
   async function applyPromoCode() {
+    // Check if the user is a loyalty customer
+    if (!isLoyaltyCustomer) {
+      toast({
+        title: "Sorry, For Loyalty Members Only!",
+        description: "Sign Up today to enjoy exclusive benefits",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!promoCode) {
       toast({
-        title: "Please enter a promo code",
+        title: "Promo Code Required",
+        description:
+          "Please select Promotion codes from the Loyalty Profile Page",
         variant: "destructive",
       });
       return;
@@ -82,9 +90,7 @@ function ShoppingCheckout() {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/loyalty/apply-promo-code",
-        {
-          code: promoCode,
-        }
+        { code: promoCode }
       );
       const { discountPercentage, discountAmount } = response.data;
 
@@ -95,7 +101,7 @@ function ShoppingCheckout() {
         setDiscountText(`${discountPercentage}% OFF applied`);
       } else if (discountAmount) {
         discount = discountAmount;
-        setDiscountText(`${discountAmount} Rs OFF applied`);
+        setDiscountText(`${discountAmount} OFF applied`);
       } else {
         toast({
           title: "Invalid promo code",
@@ -114,7 +120,6 @@ function ShoppingCheckout() {
           description: "Discount amount exceeds the total amount.",
           variant: "destructive",
         });
-
         return;
       }
 
@@ -158,7 +163,12 @@ function ShoppingCheckout() {
         productId: singleCartItem?.productId,
         title: singleCartItem?.title,
         image: singleCartItem?.image,
-        price: discountedTotal,
+        price: promoApplied
+          ? (singleCartItem?.salePrice || singleCartItem?.price) *
+            (discountedTotal / totalCartAmount)
+          : singleCartItem?.salePrice > 0
+          ? singleCartItem?.salePrice
+          : singleCartItem?.price,
         quantity: singleCartItem?.quantity,
       })),
       addressInfo: {
@@ -172,11 +182,11 @@ function ShoppingCheckout() {
       orderStatus: "pending",
       paymentMethod: "paypal",
       paymentStatus: "pending",
-      totalAmount: discountedTotal,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
       paymentId: "",
       payerId: "",
+      totalAmount: discountedTotal,
     };
 
     dispatch(createNewOrder(orderData)).then((data) => {
@@ -190,102 +200,12 @@ function ShoppingCheckout() {
     });
   }
 
-  function handleTestOrder() {
-    if (cartItems.length === 0) {
-      toast({
-        title: "Your cart is empty. Please add items to proceed",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (currentSelectedAddress === null) {
-      toast({
-        title: "Please select one address to proceed.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const orderData = {
-      userId: user?._id,
-      cartId: cartItems?._id,
-      cartItems: cartItems.items.map((singleCartItem) => ({
-        productId: singleCartItem?.productId,
-        title: singleCartItem?.title,
-        image: singleCartItem?.image,
-        price: discountedTotal,
-        quantity: singleCartItem?.quantity,
-      })),
-      addressInfo: {
-        addressId: currentSelectedAddress?._id,
-        address: currentSelectedAddress?.address,
-        city: currentSelectedAddress?.city,
-        pincode: currentSelectedAddress?.pincode,
-        phone: currentSelectedAddress?.phone,
-        notes: currentSelectedAddress?.notes,
-      },
-      orderStatus: "pending",
-      paymentMethod: "test", // Set payment method to 'test'
-      paymentStatus: "completed", // Set payment status to 'completed'
-      totalAmount: discountedTotal,
-      orderDate: new Date(),
-      orderUpdateDate: new Date(),
-      paymentId: "test-payment-id",
-      payerId: "test-payer-id",
-    };
-
-    dispatch(createNewOrder(orderData)).then((data) => {
-      if (data?.payload?.success) {
-        toast({
-          title: "Test Order Placed Successfully!",
-          variant: "success",
-        });
-        handlePaymentCompletion(user.email, discountedTotal);
-        setIsTestOrder(true);
-      } else {
-        toast({
-          title: "Test Order Failed.",
-          variant: "destructive",
-        });
-        setIsTestOrder(false);
-      }
-    });
-  }
-
   // Effect to handle redirection based on the state
   useEffect(() => {
     if (isPaymentStart && approvalURL) {
       window.location.href = approvalURL;
     }
   }, [isPaymentStart, approvalURL]);
-
-  const handlePaymentCompletion = (email, total) => {
-    const points = Math.floor(total / 10);
-
-    // Dispatch the action to update loyalty points
-    dispatch(updateLoyaltyPoints({ email, points })).then((action) => {
-      // Display the points added message regardless of tier change
-      toast({
-        title: `Points Added!`,
-        description: `${points} points have been added to your loyalty account.`,
-        variant: "success",
-      });
-
-      // Check if the tier has changed and display the tier change message
-      if (
-        action.payload &&
-        action.payload.tier &&
-        action.payload.tier !== previousTier
-      ) {
-        toast({
-          title: `Congratulations!`,
-          description: `You have been promoted to the ${action.payload.tier} tier!`,
-          variant: "success",
-        });
-        setPreviousTier(action.payload.tier); // Update the previous tier to the new tier
-      }
-    });
-  };
 
   return (
     <div className="flex flex-col">
@@ -338,13 +258,6 @@ function ShoppingCheckout() {
             >
               {isPaymentStart && <Spinner className="text-white" />}
               {isPaymentStart ? "Processing Payment" : "Checkout with Paypal"}
-            </Button>
-            <Button
-              onClick={handleTestOrder}
-              className="w-full flex items-center gap-5 bg-green-500"
-            >
-              {isTestOrder && <Spinner className="text-white" />}
-              {isTestOrder ? "Test Order Placed" : "Place Test Order"}
             </Button>
           </div>
         </div>

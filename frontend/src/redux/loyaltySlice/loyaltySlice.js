@@ -10,6 +10,7 @@ const initialState = {
   loading: false,
   error: null,
   referralStatus: null,
+  pointsAdded: false,
 };
 
 // Async thunk to create a new loyalty customer
@@ -114,7 +115,14 @@ const loyaltySlice = createSlice({
     tier: "",
   },
   initialState,
-  reducers: {},
+  reducers: {
+    updateLoyaltyPointsSuccess(state) {
+      state.pointsAdded = true;
+    },
+    resetPointsAdded(state) {
+      state.pointsAdded = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createLoyaltyCustomer.pending, (state) => {

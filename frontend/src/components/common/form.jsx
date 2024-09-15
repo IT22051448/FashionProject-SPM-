@@ -30,20 +30,19 @@ const CommonForm = ({
     let element = null;
     const value = formData[control.name] || "";
 
+    const commonProps = {
+      name: control.name,
+      placeholder: control.placeholder,
+      id: control.name,
+      value: value,
+      onChange: (e) =>
+        setFormData({ ...formData, [control.name]: e.target.value }),
+      readOnly: control.readOnly, // Add readOnly here
+    };
+
     switch (control.componentType) {
       case types.INPUT:
-        element = (
-          <Input
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            type={control.type}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Input {...commonProps} type={control.type} />;
         break;
 
       case types.SELECT:
@@ -74,32 +73,11 @@ const CommonForm = ({
         break;
 
       case types.TEXTAREA:
-        element = (
-          <Textarea
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Textarea {...commonProps} />;
         break;
 
       default:
-        element = (
-          <Input
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            type={control.type}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Input {...commonProps} type={control.type} />;
     }
 
     return element;
