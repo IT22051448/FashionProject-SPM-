@@ -37,6 +37,52 @@ exports.getAllCustomers = async (req, res) => {
   }
 };
 
+// Update customer details by email
+exports.updateCustomer = async (req, res) => {
+  const { email } = req.params;
+  const updateFields = req.body;
+
+  try {
+    // Find the customer by email
+    const existingCustomer = await Loyalty.findOne({ email });
+
+    if (!existingCustomer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Update only the fields provided in the request
+    Object.keys(updateFields).forEach(key => {
+      if (updateFields[key] !== undefined) {
+        existingCustomer[key] = updateFields[key];
+      }
+    });
+
+    // Save the updated customer
+    const updatedCustomer = await existingCustomer.save();
+
+    res.status(200).json(updatedCustomer);
+  } catch (error) {
+    console.error("Error updating customer:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Delete customer by email
+exports.deleteCustomerByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const result = await Loyalty.findOneAndDelete({ email });
+
+    if (!result) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.status(200).json({ message: "Customer deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 // Update loyalty points and tier
 exports.updateLoyaltyPoints = async (req, res) => {
   try {
@@ -296,5 +342,26 @@ exports.applyPromoCode = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.updateCustomerTier = async (req, res) => {
+  const { email } = req.params;
+  const { tier } = req.body;
+
+  try {
+    // Find the customer by email
+    const customer = await Loyalty.findOne({ email });
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Update the tier
+    customer.tier = tier;
+    await customer.save();
+
+    res.json(customer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

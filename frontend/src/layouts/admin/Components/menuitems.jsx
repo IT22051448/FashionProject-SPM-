@@ -39,6 +39,13 @@ export const adminSideBarMenuItems = [
     path: "/admin/promocodes",
     icon: <Stamp />,
   },
+
+  {
+    id: "loyaltymembers",
+    label: "Loyalty Members",
+    path: "/admin/view-members",
+    icon: <Stamp />,
+  },
 ];
 
 // eslint-disable-next-line react/prop-types

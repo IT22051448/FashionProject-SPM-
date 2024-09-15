@@ -7,15 +7,12 @@ import { useState, useEffect } from "react";
 import { createNewOrder } from "@/redux/orderSlice";
 import { useToast } from "@/hooks/use-toast";
 import { Spinner } from "@/components/ui/spinner";
-import { checkLoyaltyCustomer } from "@/redux/loyaltySlice/loyaltySlice";
-import axios from "axios";
+import { applyPromoCode } from "@/redux/loyaltySlice/loyaltySlice";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
   const { approvalURL } = useSelector((state) => state.order);
-  const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
-  const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
   const [promoCode, setPromoCode] = useState("");
@@ -23,8 +20,8 @@ function ShoppingCheckout() {
   const [promoApplied, setPromoApplied] = useState(false);
   const [discountText, setDiscountText] = useState("");
   const { isLoyaltyCustomer } = useSelector((state) => state.loyalty);
-
-  console.log(currentSelectedAddress, "cartItems");
+  const [isPaymentStart, setIsPaymemntStart] = useState(false);
+  const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
 
   const totalCartAmount =
     cartItems && cartItems.items && cartItems.items.length > 0
@@ -40,21 +37,18 @@ function ShoppingCheckout() {
       : 0;
 
   useEffect(() => {
-    // Update discounted total based on promo code
     setDiscountedTotal(totalCartAmount);
   }, [totalCartAmount]);
 
   useEffect(() => {
-    // Check for applied promo code in sessionStorage
     const storedPromoCode = sessionStorage.getItem("appliedPromoCode");
     if (storedPromoCode) {
       setPromoCode(storedPromoCode);
-      sessionStorage.removeItem("appliedPromoCode"); // Clear promo code from sessionStorage
+      sessionStorage.removeItem("appliedPromoCode");
     }
   }, []);
 
-  async function applyPromoCode() {
-    // Check if the user is a loyalty customer
+  async function applyPromoCodeHandler() {
     if (!isLoyaltyCustomer) {
       toast({
         title: "Sorry, For Loyalty Members Only!",
@@ -74,7 +68,6 @@ function ShoppingCheckout() {
       return;
     }
 
-    // Check if there are items on sale in the cart
     const hasSaleItems = cartItems.items.some(
       (item) => item.salePrice && item.salePrice > 0
     );
@@ -88,47 +81,50 @@ function ShoppingCheckout() {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/loyalty/apply-promo-code",
-        { code: promoCode }
-      );
-      const { discountPercentage, discountAmount } = response.data;
+      const resultAction = await dispatch(applyPromoCode(promoCode));
+      if (applyPromoCode.fulfilled.match(resultAction)) {
+        const { discountPercentage, discountAmount } = resultAction.payload;
 
-      let discount = 0;
+        let discount = 0;
 
-      if (discountPercentage) {
-        discount = (totalCartAmount * discountPercentage) / 100;
-        setDiscountText(`${discountPercentage}% OFF applied`);
-      } else if (discountAmount) {
-        discount = discountAmount;
-        setDiscountText(`${discountAmount} OFF applied`);
+        if (discountPercentage) {
+          discount = (totalCartAmount * discountPercentage) / 100;
+          setDiscountText(`${discountPercentage}% OFF applied`);
+        } else if (discountAmount) {
+          discount = discountAmount;
+          setDiscountText(`${discountAmount} OFF applied`);
+        } else {
+          toast({
+            title: "Invalid promo code",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const newTotal = totalCartAmount - discount;
+
+        if (newTotal < 0) {
+          toast({
+            title: "Cannot apply promo code",
+            description: "Discount amount exceeds the total amount.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setDiscountedTotal(newTotal);
+        setPromoApplied(true);
+        toast({
+          title: "Discount applied successfully!",
+          variant: "success",
+        });
       } else {
         toast({
-          title: "Invalid promo code",
+          title: "Error applying promo code",
+          description: resultAction.payload.message,
           variant: "destructive",
         });
-        return;
       }
-
-      // Calculate the new total
-      const newTotal = totalCartAmount - discount;
-
-      // Check if the new total is below zero
-      if (newTotal < 0) {
-        toast({
-          title: "Cannot apply promo code",
-          description: "Discount amount exceeds the total amount.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setDiscountedTotal(newTotal);
-      setPromoApplied(true);
-      toast({
-        title: "Discount applied successfully!",
-        variant: "success",
-      });
     } catch (error) {
       toast({
         title: "Error applying promo code",
@@ -190,9 +186,7 @@ function ShoppingCheckout() {
     };
 
     dispatch(createNewOrder(orderData)).then((data) => {
-      console.log(data, "order creation succesfull");
       if (data?.payload?.success) {
-        console.log("Payment started");
         setIsPaymemntStart(true);
       } else {
         setIsPaymemntStart(false);
@@ -200,7 +194,6 @@ function ShoppingCheckout() {
     });
   }
 
-  // Effect to handle redirection based on the state
   useEffect(() => {
     if (isPaymentStart && approvalURL) {
       window.location.href = approvalURL;
@@ -241,7 +234,7 @@ function ShoppingCheckout() {
                 className="border p-2 rounded-md w-full"
                 readOnly
               />
-              <Button onClick={applyPromoCode} className="flex-shrink-0">
+              <Button onClick={applyPromoCodeHandler} className="flex-shrink-0">
                 Apply
               </Button>
             </div>

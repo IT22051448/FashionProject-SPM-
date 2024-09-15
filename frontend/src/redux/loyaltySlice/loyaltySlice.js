@@ -19,7 +19,7 @@ export const createLoyaltyCustomer = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/loyalty/create-customer",
+        `${import.meta.env.VITE_API_URL}loyalty/create-customer`,
         formData
       );
       return response.data;
@@ -35,7 +35,7 @@ export const checkLoyaltyCustomer = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/loyalty/check-customer",
+        `${import.meta.env.VITE_API_URL}loyalty/check-customer`,
         { email }
       );
       return response.data.exists;
@@ -51,7 +51,7 @@ export const referAFriend = createAsyncThunk(
   async ({ referrerEmail, referredEmail }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/referral/refer",
+        `${import.meta.env.VITE_API_URL}referral/refer`,
         { referrerEmail, referredEmail }
       );
       return response.data;
@@ -67,11 +67,27 @@ export const fetchCustomerDetails = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/loyalty/customer/${email}`
+        `${import.meta.env.VITE_API_URL}loyalty/customer/${email}`
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Thunk for updating customer details
+export const updateCustomerDetails = createAsyncThunk(
+  "loyalty/updateCustomerDetails",
+  async ({ email, updates }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}loyalty/update-customer/${email}`,
+        updates
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
     }
   }
 );
@@ -82,7 +98,7 @@ export const fetchPromoCodes = createAsyncThunk(
   async (tier, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/loyalty/promo-codes/${tier}`
+        `${import.meta.env.VITE_API_URL}loyalty/promo-codes/${tier}`
       );
       return response.data;
     } catch (error) {
@@ -97,12 +113,81 @@ export const updateLoyaltyPoints = createAsyncThunk(
   async ({ email, points }, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/api/loyalty/email/${email}/points`,
+        `${import.meta.env.VITE_API_URL}loyalty/email/${email}/points`,
         { points }
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Delete customer action
+export const deleteCustomer = createAsyncThunk(
+  "loyalty/deleteCustomer",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_API_URL}loyalty/delete-customer/${email}`
+      );
+      if (response.status === 200) {
+        return { email };
+      } else {
+        return rejectWithValue({ message: "Failed to delete customer" });
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "An unknown error occurred" }
+      );
+    }
+  }
+);
+
+export const applyPromoCode = createAsyncThunk(
+  "loyalty/applyPromoCode",
+  async (promoCode, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}loyalty/apply-promo-code`,
+        { code: promoCode }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Add new async thunk to fetch all customers
+export const fetchAllCustomers = createAsyncThunk(
+  "loyalty/fetchAllCustomers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}loyalty/get-customers`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Async thunk for updating customer tier
+export const updateCustomerTier = createAsyncThunk(
+  "loyalty/updateCustomerTier",
+  async ({ email, newTier }, thunkAPI) => {
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_URL}loyalty/${email}/tier`,
+        {
+          tier: newTier,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
     }
   }
 );
@@ -198,8 +283,65 @@ const loyaltySlice = createSlice({
       .addCase(updateLoyaltyPoints.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
+      })
+      .addCase(updateCustomerDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCustomerDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customer = action.payload;
+      })
+      .addCase(updateCustomerDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchAllCustomers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllCustomers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customers = action.payload;
+      })
+      .addCase(fetchAllCustomers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(deleteCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customers = state.customers.filter(
+          (customer) => customer.email !== action.payload.email
+        );
+      })
+      .addCase(deleteCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(updateCustomerTier.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateCustomerTier.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedCustomer = action.payload;
+        const index = state.customers.findIndex(
+          (customer) => customer.email === updatedCustomer.email
+        );
+        if (index !== -1) {
+          state.customers[index] = updatedCustomer;
+        }
+      })
+      .addCase(updateCustomerTier.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
+export const { updateLoyaltyPointsSuccess, resetPointsAdded } =
+  loyaltySlice.actions;
 export default loyaltySlice.reducer;

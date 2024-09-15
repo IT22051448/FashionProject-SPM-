@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createPromoCode } from "@/redux/loyaltySlice/promoSlice";
 import { promoFormControls } from "@/config/promoFormConfig";
+import { useToast } from "@/hooks/use-toast";
 
 const PromoCodes = () => {
   const [formData, setFormData] = useState({
@@ -10,23 +11,53 @@ const PromoCodes = () => {
     description: "",
     tier: "",
     startDate: "",
-    endDate: "",
+    expiresAt: "",
     discountPercentage: "",
     discountAmount: "",
   });
+  const [error, setError] = useState("");
+  const [discountError, setDiscountError] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Reset discount error on change
+    setDiscountError("");
+
+    // Handle disabling of fields
+    if (name === "discountPercentage" && value) {
+      setFormData((prev) => ({
+        ...prev,
+        discountPercentage: value,
+        discountAmount: "",
+      }));
+    } else if (name === "discountAmount" && value) {
+      setFormData((prev) => ({
+        ...prev,
+        discountAmount: value,
+        discountPercentage: "",
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const expiresAt = formData.endDate ? new Date(formData.endDate) : null;
+    // Check that at least one discount field is filled
+    if (!formData.discountPercentage && !formData.discountAmount) {
+      setDiscountError(
+        "Please provide either a discount percentage or amount."
+      );
+      return;
+    }
+
+    const expiresAt = formData.expiresAt ? new Date(formData.expiresAt) : null;
     const discountPercentageValue = formData.discountPercentage
       ? parseFloat(formData.discountPercentage)
       : null;
@@ -43,16 +74,35 @@ const PromoCodes = () => {
 
     try {
       await dispatch(createPromoCode(promoData)).unwrap();
-      alert("Promo code created successfully!");
-      navigate("/admin/view-promos");
+      toast({
+        title: "Success!",
+        description: "Promo code created successfully!",
+        variant: "success",
+      });
     } catch (error) {
       console.error("Error creating promo code:", error);
-      alert("Error creating promo code. Please try again.");
+      toast({
+        title: "Error",
+        description: "Error creating promo code. Please try again.",
+        variant: "error",
+      });
     }
   };
 
   const handleViewPromoCodes = () => {
     navigate("/admin/view-promos");
+  };
+
+  const handleClick = (name) => {
+    if (name === "discountAmount" && formData.discountPercentage) {
+      setDiscountError(
+        "You cannot input a discount amount since percentage is already provided."
+      );
+    } else if (name === "discountPercentage" && formData.discountAmount) {
+      setDiscountError(
+        "You cannot input a discount percentage since amount is already provided."
+      );
+    }
   };
 
   return (
@@ -84,10 +134,18 @@ const PromoCodes = () => {
                   name={control.name}
                   value={formData[control.name]}
                   onChange={handleChange}
+                  onClick={() => handleClick(control.name)} // Trigger error on click
                   placeholder={control.placeholder}
                   step={control.step}
                   className="w-full px-3 py-2 border rounded"
                   required={control.required}
+                  readOnly={
+                    // Make the field read-only if the other field is filled
+                    (control.name === "discountAmount" &&
+                      formData.discountPercentage) ||
+                    (control.name === "discountPercentage" &&
+                      formData.discountAmount)
+                  }
                 />
               )}
               {control.componentType === "select" && (
@@ -107,6 +165,12 @@ const PromoCodes = () => {
               )}
             </div>
           ))}
+
+          {/* Display error message when user tries to input in read-only fields */}
+          {discountError && (
+            <p className="text-red-500 text-sm mb-4">{discountError}</p>
+          )}
+
           <button
             type="submit"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mr-4"

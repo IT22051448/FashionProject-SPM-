@@ -5,11 +5,13 @@ import {
   deletePromoCode,
   fetchPromoCodes,
 } from "@/redux/loyaltySlice/promoSlice";
+import { useToast } from "@/hooks/use-toast";
 
 const ViewLoyaltyPromos = () => {
   const dispatch = useDispatch();
   const { promoCodes, error, loading } = useSelector((state) => state.promo);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     dispatch(fetchPromoCodes());
@@ -76,8 +78,22 @@ const ViewLoyaltyPromos = () => {
   };
 
   // Handle delete button click
-  const handleDelete = (promoId) => {
-    dispatch(deletePromoCode(promoId));
+  const handleDelete = async (promoId) => {
+    try {
+      await dispatch(deletePromoCode(promoId)).unwrap();
+      toast({
+        title: "Success!",
+        description: "Promo code deleted successfully.",
+        variant: "success",
+      });
+    } catch (error) {
+      console.error("Error deleting promo code:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete promo code. Please try again.",
+        variant: "error",
+      });
+    }
   };
 
   if (loading) return <div className="text-center">Loading...</div>;

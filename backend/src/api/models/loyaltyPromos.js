@@ -5,9 +5,9 @@ const loyaltyPromosSchema = new mongoose.Schema({
   description: { type: String, required: true },
   tier: { type: String, required: true },
   startDate: { type: Date, required: true },
-  expiresAt: { type: Date, default: null }, // null means no expiration
-  discountPercentage: { type: Number, default: null }, // Discount in percentage
-  discountAmount: { type: Number, default: null }, // Discount in cash amount
+  expiresAt: { type: Date, required: true },
+  discountPercentage: { type: Number, default: null },
+  discountAmount: { type: Number, default: null },
 });
 
 module.exports = mongoose.model("loyaltyPromos", loyaltyPromosSchema);

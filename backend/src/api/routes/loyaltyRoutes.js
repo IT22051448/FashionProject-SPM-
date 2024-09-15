@@ -15,13 +15,16 @@ const {
   getPromoCodeById,
   updatePromoCodeById,
   applyPromoCode,
+  updateCustomer,
+  deleteCustomerByEmail,
+  updateCustomerTier,
 } = require("../controllers/loyaltyController");
 
 // Add a new customer
 router.post("/create-customer", addCustomer);
 
 // Get all customers
-router.get("/", getAllCustomers);
+router.get("/get-customers", getAllCustomers);
 
 // Update loyalty points
 router.patch("/email/:email/points", updateLoyaltyPoints);
@@ -34,6 +37,12 @@ router.post("/check-customer", checkCustomerEmail);
 
 // Get customer details by email
 router.get("/customer/:email", getCustomerByEmail);
+
+// Update customer details
+router.put("/update-customer/:email", updateCustomer);
+
+//Delete Loyalty Customer
+router.delete("/delete-customer/:email", deleteCustomerByEmail);
 
 // Get promo codes by tier
 router.get("/promo-codes/:tier", getPromoCodesByTier);
@@ -58,5 +67,8 @@ router.put("/promocodes/:id", updatePromoCodeById);
 
 // Route to apply promo code
 router.post("/apply-promo-code", applyPromoCode);
+
+// Update customer tier
+router.patch("/:email/tier", updateCustomerTier);
 
 module.exports = router;

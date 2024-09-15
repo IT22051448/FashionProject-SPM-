@@ -57,7 +57,7 @@ export const createNewOrder = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.post(
-      `http://localhost:5000/api/order/`,
+      `${import.meta.env.VITE_API_URL}order/`,
       orderData,
       {
         headers: {

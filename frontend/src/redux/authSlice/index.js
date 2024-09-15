@@ -39,7 +39,7 @@ export const clearNotifications = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       await axios.post(
-        "http://localhost:5000/api/users/clear-notifications",
+        `${import.meta.env.VITE_API_URL}users/clear-notifications`,
         { email },
         {
           withCredentials: true,
