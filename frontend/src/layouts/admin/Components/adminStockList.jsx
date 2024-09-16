@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Badge } from "@/components/ui/badge";
-import { fetchAllStock } from "@/redux/stockSlice";
+import { fetchAllStock, deleteStock } from "@/redux/stockSlice";
 import {
   Table,
   TableBody,
@@ -10,9 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { MdDeleteForever } from "react-icons/md";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 function AdminStockList() {
   const dispatch = useDispatch();
+  const [selectedStock, setSelectedStock] = useState(null); // Track the selected stock to delete
 
   useEffect(() => {
     dispatch(fetchAllStock());
@@ -20,9 +33,13 @@ function AdminStockList() {
 
   const { stockList } = useSelector((state) => state.stock);
 
-  //console.log(stockList);
-
   const stockArray = stockList?.stocks || [];
+
+  // Trigger the delete action
+  const handleDelete = (id) => {
+    dispatch(deleteStock(id));
+    setSelectedStock(null); // Reset the selected stock after deletion
+  };
 
   return (
     <div>
@@ -63,6 +80,37 @@ function AdminStockList() {
                   >
                     {stockItem?.totalStock}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => setSelectedStock(stockItem)} // Set the selected stock for deletion
+                      >
+                        <MdDeleteForever size={32} />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you sure you want to delete this stock?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. The stock item will be
+                          permanently removed.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(selectedStock._id)} // Confirm and delete stock
+                        >
+                          Confirm
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))

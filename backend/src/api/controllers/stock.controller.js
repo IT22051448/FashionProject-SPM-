@@ -59,3 +59,26 @@ export const fetchLowStocks = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const deleteStock = async (req, res) => {
+
+  try {
+
+    const deleteStock = await Stock.findByIdAndDelete(req.params.id);
+
+    if(!deleteStock) {
+      return res.status(404).json({ message: "Stock not found" });
+    }
+    else{
+      res.status(200).json({ message: "Stock deleted successfully" });
+    }
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+    
+  }
+
+
+
+}

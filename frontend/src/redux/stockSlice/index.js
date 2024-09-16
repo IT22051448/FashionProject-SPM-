@@ -4,7 +4,7 @@ import axios from "axios";
 const initialState = {
   isLoading: false,
   stockList: [],
-  lowStockList: [], 
+  lowStockList: [],
 };
 
 // Thunk to add new stock
@@ -37,10 +37,21 @@ export const fetchAllStock = createAsyncThunk(
 
 // Thunk to fetch low stock
 export const fetchLowStock = createAsyncThunk(
-  "adminStock/fetchLowStock", // Changed the action type to avoid conflicts
+  "adminStock/fetchLowStock",
   async () => {
     const result = await axios.get("http://localhost:3000/api/stock/fetch-low");
     return result?.data;
+  }
+);
+
+// Thunk to delete stock
+export const deleteStock = createAsyncThunk(
+  "adminStock/deleteStock",
+  async (stockId) => {
+    const result = await axios.delete(
+      `http://localhost:3000/api/stock/delete-stock/${stockId}`
+    );
+    return stockId; // Return the stock ID that was deleted
   }
 );
 
@@ -48,7 +59,7 @@ export const fetchLowStock = createAsyncThunk(
 const adminStockSlice = createSlice({
   name: "adminStock",
   initialState,
-  reducers: {}, 
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // Fetch all stock
@@ -70,13 +81,27 @@ const adminStockSlice = createSlice({
       })
       .addCase(fetchLowStock.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.lowStockList = action.payload; 
-        console.log(action.payload); // Log the low stock items
-        
+        state.lowStockList = action.payload;
+        console.log(action.payload); 
       })
       .addCase(fetchLowStock.rejected, (state) => {
         state.isLoading = false;
         state.lowStockList = [];
+      })
+
+      // Delete stock
+      .addCase(deleteStock.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteStock.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Remove the deleted stock from the stock list
+        state.stockList = state.stockList.filter(
+          (stock) => stock._id !== action.payload
+        );
+      })
+      .addCase(deleteStock.rejected, (state) => {
+        state.isLoading = false;
       });
   },
 });
