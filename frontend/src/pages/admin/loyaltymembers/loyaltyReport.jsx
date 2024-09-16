@@ -39,7 +39,36 @@ const LoyaltyReport = () => {
       <div className="text-center text-lg text-red-600">Error: {error}</div>
     );
 
-  // Function to get members count per tier with specified colors
+  // Function to calculate revenue for each customer
+  const calculateRevenue = (points, referrals) => {
+    return (points - referrals * 40) * 10;
+  };
+
+  // Calculate revenues for all customers
+  const revenues = customers.map((customer) =>
+    calculateRevenue(customer.loyaltyPoints, customer.referredcount)
+  );
+
+  // Calculate highest, lowest, and total revenue
+  const highestRevenue = Math.max(...revenues);
+  const lowestRevenue = Math.min(...revenues);
+  const totalRevenue = revenues.reduce((acc, revenue) => acc + revenue, 0);
+
+  // Find the customer with the highest and lowest revenue
+  const highestRevenueCustomer = customers[revenues.indexOf(highestRevenue)];
+  const lowestRevenueCustomer = customers[revenues.indexOf(lowestRevenue)];
+
+  // Define color mapping for each tier
+  const tierColorMap = {
+    Diamond: "#451af0",
+    Bronze: "#784d19",
+    Gold: "#a38518",
+    Silver: "#cfcfcf",
+    Grey: "#727372",
+    Platinum: "#539dfc",
+  };
+
+  // Function to get members count per tier with fixed colors
   const getMembersByTier = () => {
     const tierCounts = customers.reduce((acc, customer) => {
       acc[customer.tier] = (acc[customer.tier] || 0) + 1;
@@ -51,14 +80,9 @@ const LoyaltyReport = () => {
         {
           label: "Members by Tier",
           data: Object.values(tierCounts),
-          backgroundColor: [
-            "#451af0", // Diamond
-            "#784d19", // Bronze
-            "#a38518", // Gold
-            "#cfcfcf", // Silver
-            "#727372", // Grey
-            "#539dfc", // Platinum
-          ],
+          backgroundColor: Object.keys(tierCounts).map(
+            (tier) => tierColorMap[tier] || "#000"
+          ), // Use fixed colors
         },
       ],
     };
@@ -181,6 +205,28 @@ const LoyaltyReport = () => {
         </button>
       </div>
 
+      {/* Display Stats */}
+      <div className="stats-container grid grid-cols-3 gap-6 mb-8">
+        <div className="stat-card bg-white shadow-lg p-6 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4">Highest Revenue</h3>
+          <p className="text-lg font-bold">
+            {highestRevenueCustomer ? highestRevenueCustomer.name : "N/A"}: $
+            {highestRevenue.toFixed(2)}
+          </p>
+        </div>
+        <div className="stat-card bg-white shadow-lg p-6 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4">Lowest Revenue</h3>
+          <p className="text-lg font-bold">
+            {lowestRevenueCustomer ? lowestRevenueCustomer.name : "N/A"}: $
+            {lowestRevenue.toFixed(2)}
+          </p>
+        </div>
+        <div className="stat-card bg-white shadow-lg p-6 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4">Total Revenue</h3>
+          <p className="text-lg font-bold">${totalRevenue.toFixed(2)}</p>
+        </div>
+      </div>
+
       {/* Standalone Table for customer information */}
       <div className="chart-container bg-white shadow-lg p-4 rounded-lg mb-6">
         <h3 className="text-xl font-semibold mb-4 text-center">
@@ -218,28 +264,28 @@ const LoyaltyReport = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {sortedCustomers.map((customer) => (
               <tr key={customer.email}>
-                <td className="px-4 py-2 text-sm font-medium text-gray-900">
+                <td className="px-4 py-3 text-sm font-medium text-gray-900">
                   {customer.name}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-gray-500">
                   {customer.email}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-gray-500">
                   {customer.phoneNumber}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-gray-500">
                   {new Date(customer.dateOfBirth).toLocaleDateString("en-GB")}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-gray-500">
                   {customer.loyaltyPoints}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-gray-500">
                   {customer.tier}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-gray-500">
                   {customer.referredcount}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-3 text-sm text-gray-500">
                   {new Date(customer.joinDate).toLocaleDateString("en-GB")}
                 </td>
               </tr>
@@ -248,31 +294,25 @@ const LoyaltyReport = () => {
         </table>
       </div>
 
-      {/* One chart per row */}
-      <div className="chart-container bg-white shadow-lg p-4 rounded-lg mb-6">
-        <h3 className="text-xl font-semibold mb-4 text-center">
-          Members by Tier
-        </h3>
-        <div className="flex justify-center">
-          <Pie id="membersByTierChart" data={getMembersByTier()} />
+      {/* Chart Section */}
+      <div className="chart-container grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-white shadow-lg p-4 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4 text-center">
+            Members by Tier
+          </h3>
+          <Pie data={getMembersByTier()} id="membersByTierChart" />
         </div>
-      </div>
-
-      <div className="chart-container bg-white shadow-lg p-4 rounded-lg mb-6">
-        <h3 className="text-xl font-semibold mb-4 text-center">
-          Loyalty Points by Member
-        </h3>
-        <div className="flex justify-center">
-          <Bar id="pointsByMemberChart" data={getPointsByMember()} />
+        <div className="bg-white shadow-lg p-4 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4 text-center">
+            Loyalty Points by Member
+          </h3>
+          <Bar data={getPointsByMember()} id="pointsByMemberChart" />
         </div>
-      </div>
-
-      <div className="chart-container bg-white shadow-lg p-4 rounded-lg mb-6">
-        <h3 className="text-xl font-semibold mb-4 text-center">
-          Referrals by Member
-        </h3>
-        <div className="flex justify-center">
-          <Bar id="referralsByMemberChart" data={getReferralsByMember()} />
+        <div className="bg-white shadow-lg p-4 rounded-lg">
+          <h3 className="text-xl font-semibold mb-4 text-center">
+            Referrals by Member
+          </h3>
+          <Bar data={getReferralsByMember()} id="referralsByMemberChart" />
         </div>
       </div>
     </div>
