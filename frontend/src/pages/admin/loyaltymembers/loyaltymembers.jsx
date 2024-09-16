@@ -52,12 +52,7 @@ const LoyaltyMembers = () => {
   };
 
   const handleGenerateReport = () => {
-    toast({
-      title: "Report Generated",
-      description:
-        "The report generation functionality is not yet implemented.",
-      variant: "info",
-    });
+    navigate(`/admin/loyalty/generate-report`);
   };
 
   const handlePromote = async (count) => {
@@ -119,6 +114,7 @@ const LoyaltyMembers = () => {
             <th className="border px-4 py-2">Phone Number</th>
             <th className="border px-4 py-2">Loyalty Points</th>
             <th className="border px-4 py-2">Tier</th>
+            <th className="border px-4 py-2">Successful Referrals</th>
             <th className="border px-4 py-2">Join Date</th>
             <th className="border px-4 py-2" colSpan="2">
               Actions
@@ -131,8 +127,13 @@ const LoyaltyMembers = () => {
               <td className="py-2 px-4">{customer.name}</td>
               <td className="py-2 px-4">{customer.email}</td>
               <td className="py-2 px-4">{customer.phoneNumber}</td>
-              <td className="py-2 px-4">{customer.loyaltyPoints}</td>
-              <td className="py-2 px-4">{customer.tier}</td>
+              <td className="py-2 px-4 text-center">
+                {customer.loyaltyPoints}
+              </td>
+              <td className="py-2 px-4 text-center">{customer.tier}</td>
+              <td className="py-2 px-4 text-center">
+                {customer.referredcount || 0}{" "}
+              </td>
               <td className="py-2 px-4">
                 {new Date(customer.joinDate).toLocaleDateString("en-GB")}
               </td>

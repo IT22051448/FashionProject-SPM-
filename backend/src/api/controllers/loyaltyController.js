@@ -365,3 +365,37 @@ exports.updateCustomerTier = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Route to generate report
+exports.generateReport = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    // Create a query object based on the start and end dates if provided
+    let query = {};
+    if (startDate && endDate) {
+      query = {
+        joinDate: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      };
+    }
+
+    // Query the database for loyalty data within the specified range
+    const loyaltyData = await Loyalty.find(query);
+
+    // Map the data to fit the report's needs
+    const reportData = loyaltyData.map(item => ({
+      customerName: item.name,
+      loyaltyPoints: item.loyaltyPoints,
+      status: item.status, // Assuming 'status' is part of your schema
+    }));
+
+    // Send the response back to the client
+    res.status(200).json(reportData);
+  } catch (error) {
+    console.error("Error generating report:", error);
+    res.status(500).json({ message: "Error generating report" });
+  }
+};

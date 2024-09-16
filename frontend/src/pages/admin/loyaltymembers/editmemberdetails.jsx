@@ -24,6 +24,7 @@ const EditMemberDetails = () => {
     loyaltyPoints: 0,
     tier: "",
     joinDate: "",
+    referredcount: 0,
   });
 
   // Fetch customer details
@@ -52,6 +53,7 @@ const EditMemberDetails = () => {
         phoneNumber: customer.phoneNumber || "",
         loyaltyPoints: customer.loyaltyPoints || 0,
         tier: customer.tier || "",
+        referredcount: customer.referredcount || 0,
         joinDate: customer.joinDate
           ? new Date(customer.joinDate).toISOString().split("T")[0]
           : "",
@@ -81,12 +83,13 @@ const EditMemberDetails = () => {
       // Dispatch update with proper data structure
       await dispatch(
         updateCustomerDetails({
-          email: formData.email, // Pass email separately
+          email: formData.email,
           updates: {
-            name: formData.name, // Pass the rest in an "updates" object
+            name: formData.name,
             phoneNumber: formData.phoneNumber,
             loyaltyPoints: formData.loyaltyPoints,
             tier: formData.tier,
+            referredcount: formData.referredcount,
             joinDate: formData.joinDate,
           },
         })
@@ -209,6 +212,19 @@ const EditMemberDetails = () => {
                       name="joinDate"
                       value={formData.joinDate}
                       onChange={handleChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-lg font-bold text-gray-700">
+                      Successful Referrals
+                    </label>
+                    <input
+                      type="number"
+                      name="referredcount"
+                      value={formData.referredcount}
+                      onChange={handleChange}
+                      placeholder="Successful Referrals"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
                     />
                   </div>

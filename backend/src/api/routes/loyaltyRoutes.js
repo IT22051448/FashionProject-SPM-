@@ -71,4 +71,7 @@ router.post("/apply-promo-code", applyPromoCode);
 // Update customer tier
 router.patch("/:email/tier", updateCustomerTier);
 
+// GenerateReport
+router.get("/generate-report", updateCustomerTier);
+
 module.exports = router;

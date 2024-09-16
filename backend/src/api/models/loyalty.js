@@ -13,6 +13,7 @@ const LoyaltySchema = new mongoose.Schema({
     enum: ["Grey", "Bronze", "Silver", "Gold", "Platinum", "Diamond"],
     default: "Grey",
   },
+  referredcount: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("Loyalty", LoyaltySchema);
