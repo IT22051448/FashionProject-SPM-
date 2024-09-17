@@ -4,6 +4,7 @@ import {
   PackageOpen,
   Warehouse,
   Stamp,
+  UserRoundCheck,
 } from "lucide-react";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -44,7 +45,7 @@ export const adminSideBarMenuItems = [
     id: "loyaltymembers",
     label: "Loyalty Members",
     path: "/admin/view-members",
-    icon: <Stamp />,
+    icon: <UserRoundCheck />,
   },
 ];
 

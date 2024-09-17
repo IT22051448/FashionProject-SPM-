@@ -208,14 +208,18 @@ const LoyaltyReport = () => {
       {/* Display Stats */}
       <div className="stats-container grid grid-cols-3 gap-6 mb-8">
         <div className="stat-card bg-white shadow-lg p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4">Highest Revenue</h3>
+          <h3 className="text-xl font-semibold mb-4">
+            Highest Revenue Generator
+          </h3>
           <p className="text-lg font-bold">
             {highestRevenueCustomer ? highestRevenueCustomer.name : "N/A"}: $
             {highestRevenue.toFixed(2)}
           </p>
         </div>
         <div className="stat-card bg-white shadow-lg p-6 rounded-lg">
-          <h3 className="text-xl font-semibold mb-4">Lowest Revenue</h3>
+          <h3 className="text-xl font-semibold mb-4">
+            Lowest Revenue Generator
+          </h3>
           <p className="text-lg font-bold">
             {lowestRevenueCustomer ? lowestRevenueCustomer.name : "N/A"}: $
             {lowestRevenue.toFixed(2)}
@@ -230,7 +234,7 @@ const LoyaltyReport = () => {
       {/* Standalone Table for customer information */}
       <div className="chart-container bg-white shadow-lg p-4 rounded-lg mb-6">
         <h3 className="text-xl font-semibold mb-4 text-center">
-          Customer Information
+          Loyalty Members Information
         </h3>
         <table className="w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
