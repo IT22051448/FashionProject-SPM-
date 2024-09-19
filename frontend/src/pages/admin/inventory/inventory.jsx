@@ -36,13 +36,13 @@ function Admininventory() {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("Dispatching fetchAllStock and fetchAllSuppliers");
+   
     dispatch(fetchAllStock());
     dispatch(fetchAllSuppliers());
   }, [dispatch]);
 
   const {
-    supplierList = [], // Access supplierList directly
+    supplierList = [], 
     isLoading,
     error,
   } = useSelector((state) => state.supplier);
@@ -55,8 +55,8 @@ function Admininventory() {
 
   const supplierOptions = Array.isArray(supplierList)
     ? supplierList.map((supplier) => ({
-        value: supplier._id, // Assuming _id is the identifier
-        label: supplier.name, // Assuming name is the display value
+        value: supplier._id, 
+        label: supplier.name,
       }))
     : [];
 

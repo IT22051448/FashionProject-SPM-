@@ -27,7 +27,7 @@ export const sendEmail = async (email, itemCode, qnt, date) => {
   const emailContent = {
     body: {
       intro:
-        "We would like to inform you that we need to reorder stock for the following items.",
+        "We would like to inform you that we need to order a stock for the following item.",
       table: {
         data: [
           { key: "Item Code", value: itemCode },

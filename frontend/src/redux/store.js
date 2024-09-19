@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 import adminStockSlice from "./stockSlice";
 import supplierSlice from "./supplierSlice";
+import mailslice from "./mailSlice/mailslice";
 
 const persistConfig = {
   key: "root",
@@ -13,8 +14,9 @@ const persistConfig = {
 
 const reducer = combineReducers({
   auth: authReducer,
-  stock: adminStockSlice,  
+  stock: adminStockSlice,
   supplier: supplierSlice,
+  email: mailslice,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

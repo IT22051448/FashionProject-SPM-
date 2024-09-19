@@ -24,7 +24,7 @@ const CommonForm = ({
   setFormData,
   onSubmit,
   buttonText,
-  supplierOptions, // New prop for supplier options
+  supplierOptions,
 }) => {
   function renderInput(control) {
     let element = null;
@@ -131,7 +131,7 @@ CommonForm.propTypes = {
   setFormData: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   buttonText: PropTypes.string,
-  supplierOptions: PropTypes.array, // New prop type for supplier options
+  supplierOptions: PropTypes.array,
 };
 
 export default CommonForm;

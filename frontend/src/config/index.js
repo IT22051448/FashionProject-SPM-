@@ -144,13 +144,13 @@ export const addStockFormElements = [
     type: "text",
     placeholder: "Enter item ID",
   },
- {
-  label: "Supplier",
-  name: "supplier",
-  componentType: "select", 
-  placeholder: "Select supplier",
-  options: [],
-},
+  {
+    label: "Supplier",
+    name: "supplier",
+    componentType: "select",
+    placeholder: "Select supplier",
+    options: [],
+  },
   {
     label: " Bulk Price",
     name: "price",
@@ -171,5 +171,28 @@ export const addStockFormElements = [
     componentType: "input",
     type: "number",
     placeholder: "Enter total stock",
+  },
+];
+
+export const reorderFormControls = [
+  {
+    name: "supplier",
+    label: "Supplier",
+    componentType: "select",
+    placeholder: "Select a supplier",
+  },
+  {
+    name: "quantity",
+    label: "Quantity",
+    componentType: "input",
+    type: "number",
+    placeholder: "Enter quantity",
+  },
+  {
+    name: "reorderDate",
+    label: "Reorder Date",
+    componentType: "input",
+    type: "date",
+    placeholder: "Select reorder date",
   },
 ];
