@@ -28,7 +28,7 @@ const PayPalReturn = () => {
 
       navigate("/shop/order-success");
     });
-  }, [paymentId, payerId, placedOrderId, dispatch, navigate]);
+  }, [paymentId, payerId, placedOrderId, dispatch, navigate, user?._id]);
 
   return (
     <Card>
