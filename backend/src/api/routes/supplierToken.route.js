@@ -16,7 +16,7 @@ router.get("/validate-token/:token", async (req, res) => {
     if (result.valid) {
       res.status(200).json({
         message: "Token is valid!",
-        data: result.data, // Return associated data
+        data: result.token, // Return the token object
       });
     } else {
       res.status(404).json({ message: result.message });
@@ -25,6 +25,5 @@ router.get("/validate-token/:token", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 
 export default router;

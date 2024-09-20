@@ -1,28 +1,23 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const supplierTokenSchema = new Schema({
-  token: {
-    type: String,
-    required: true, 
-  },
-  data: [
-    {
-      quantity: {
-        type: Number,
-       
-      },
-      date: {
-        type: Date,
-       
-      },
-      itemId: {
-        type: String,
-        
-      },
+const supplierTokenSchema = new Schema(
+  {
+    token: {
+      type: String,
+      required: true,
     },
-  ],
- 
-} ,{ timestamps: true });
+    itemId: {
+      type: String,
+    },
+    quantity: {
+      type: Number,
+    },
+    date: {
+      type: Date,
+    },
+  },
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("SupplierToken", supplierTokenSchema);

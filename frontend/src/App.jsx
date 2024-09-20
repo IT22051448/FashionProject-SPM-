@@ -14,6 +14,7 @@ import UnAuthPage from "./pages/unauth-page";
 import CheckAuth from "./components/common/check-auth";
 import { useSelector } from "react-redux";
 import ShoppingCheckout from "./pages/customer/checkout/checkout";
+import SupplierConfirmation from "./pages/supplier-access/SupplierConfimation";
 
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -62,6 +63,10 @@ function App() {
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="/unauth-page" element={<UnAuthPage />} />
+        <Route
+          path="/supplier-order/:tokenId"
+          element={<SupplierConfirmation />}
+        />
       </Routes>
     </>
   );

@@ -2,14 +2,16 @@ import SupplierToken from "../models/supplierToken.model";
 
 export const addSupplierToken = async (req, res) => {
   try {
-    const { token, data } = req.body;
+    const { token, itemId, quantity, date } = req.body;
 
     const newSupplierToken = new SupplierToken({
       token,
-      data,
+      itemId,
+      quantity,
+      date,
     });
 
-    newSupplierToken.save();
+    await newSupplierToken.save(); // Await the save operation
     res.status(200).json({ message: "Supplier token added successfully" });
   } catch (error) {
     console.log(error);
@@ -19,13 +21,12 @@ export const addSupplierToken = async (req, res) => {
 
 export const validateToken = async tokenToValidate => {
   try {
-    // Find the token in the database
     const foundToken = await SupplierToken.findOne({ token: tokenToValidate });
 
     if (foundToken) {
       return {
         valid: true,
-        data: foundToken.data, // Return associated data
+        token: foundToken, // Return the entire token object
       };
     } else {
       return {

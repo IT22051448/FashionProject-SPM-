@@ -14,7 +14,7 @@ export const validateToken = createAsyncThunk(
   async (token, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/supplierToken/validate/${token}`
+        `http://localhost:3000/api/supplierToken/validate-token/${token}`
       );
       return response.data; // Return valid token data
     } catch (error) {
@@ -28,7 +28,6 @@ const tokenSlice = createSlice({
   name: "token",
   initialState,
   reducers: {
-    // Optionally add synchronous actions here
     setToken: (state, action) => {
       state.token = action.payload;
     },
@@ -44,7 +43,7 @@ const tokenSlice = createSlice({
       })
       .addCase(validateToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.token = action.payload.data; // Store token data if needed
+        state.token = action.payload.data; // Adjust this if needed
       })
       .addCase(validateToken.rejected, (state, action) => {
         state.isLoading = false;
