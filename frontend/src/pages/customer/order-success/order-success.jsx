@@ -17,7 +17,7 @@ const OrderSuccess = () => {
   });
 
   return (
-    <div className="flex flex1 items-center justify-center ">
+    <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <Card>
         <CardHeader>
           <CardTitle>Processing Payment...Please wait!</CardTitle>
