@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast"; // Import useToast
+import { useToast } from "@/hooks/use-toast"; 
 
 function LowStockList() {
   const initialFormData = {
@@ -29,6 +29,9 @@ function LowStockList() {
     quantity: 0,
     reorderDate: null,
   };
+
+  
+  
 
   const [openOrderDialog, setOpenOrderDialog] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
@@ -40,6 +43,8 @@ function LowStockList() {
   useEffect(() => {
     dispatch(fetchAllSuppliers());
   }, [dispatch]);
+
+
 
   const {
     supplierList = [],

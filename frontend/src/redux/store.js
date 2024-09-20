@@ -4,7 +4,8 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 import adminStockSlice from "./stockSlice";
 import supplierSlice from "./supplierSlice";
-import mailslice from "./mailSlice/mailslice";
+import mailslice from "./mailSlice/mailSlice";
+import tokenReducer from "./supplierToken/supplierTokenSlice"; 
 
 const persistConfig = {
   key: "root",
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   stock: adminStockSlice,
   supplier: supplierSlice,
   email: mailslice,
+  token: tokenReducer, // Add the token reducer here
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);
@@ -27,7 +29,6 @@ const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     }),
-
   devTools: true,
 });
 

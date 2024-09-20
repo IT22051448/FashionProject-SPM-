@@ -1,0 +1,58 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+// Initial state
+const initialState = {
+  token: null,
+  isLoading: false,
+  error: null,
+};
+
+// Async thunk to validate a token
+export const validateToken = createAsyncThunk(
+  "token/validateToken",
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/supplierToken/validate/${token}`
+      );
+      return response.data; // Return valid token data
+    } catch (error) {
+      return rejectWithValue(error.response.data); // Return error message
+    }
+  }
+);
+
+// Create the token slice
+const tokenSlice = createSlice({
+  name: "token",
+  initialState,
+  reducers: {
+    // Optionally add synchronous actions here
+    setToken: (state, action) => {
+      state.token = action.payload;
+    },
+    clearToken: (state) => {
+      state.token = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(validateToken.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(validateToken.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.token = action.payload.data; // Store token data if needed
+      })
+      .addCase(validateToken.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload; // Set error message
+      });
+  },
+});
+
+// Export actions and reducer
+export const { setToken, clearToken } = tokenSlice.actions;
+export default tokenSlice.reducer;
