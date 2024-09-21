@@ -1,8 +1,8 @@
 import SupplierToken from "../models/supplierToken.model";
 
-export const addSupplierToken = async (req, res) => {
+export const addSupplierToken = async tokenData => {
   try {
-    const { token, itemId, quantity, date } = req.body;
+    const { token, itemId, quantity, date } = tokenData;
 
     const newSupplierToken = new SupplierToken({
       token,
@@ -11,11 +11,11 @@ export const addSupplierToken = async (req, res) => {
       date,
     });
 
-    await newSupplierToken.save(); // Await the save operation
-    res.status(200).json({ message: "Supplier token added successfully" });
+    await newSupplierToken.save();
+    return { message: "Supplier token added successfully" };
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    throw new Error("Internal server error");
   }
 };
 
@@ -26,7 +26,7 @@ export const validateToken = async tokenToValidate => {
     if (foundToken) {
       return {
         valid: true,
-        token: foundToken, // Return the entire token object
+        token: foundToken, 
       };
     } else {
       return {

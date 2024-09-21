@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import Mailgen from "mailgen";
+import crypto from "crypto";
+import { addSupplierToken } from "../controllers/supplierToken.controller";
 
 dotenv.config();
 
-export const sendEmail = async (email, itemCode, qnt, date) => {
-  // Configure the transporter
+export const sendEmail = async (email, itemId, qnt, date) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -19,24 +20,38 @@ export const sendEmail = async (email, itemCode, qnt, date) => {
   const mailGenerator = new Mailgen({
     theme: "default",
     product: {
-      name: "Fashion retail Store",
+      name: "Fashion Retail Store",
       link: " ",
     },
   });
 
+  const generateToken = async () => {
+    return crypto.randomBytes(6).toString("base64url");
+  };
+
+  const token = await generateToken();
+
+  // The link for order confirmation
+  const confirmationLink = `http://localhost:5173/supplier-order/${token}`;
+
+  // Email content
   const emailContent = {
     body: {
       intro:
-        "We would like to inform you that we need to order a stock for the following item.",
+        "We would like to inform you that we need to order stock for the following item.",
       table: {
         data: [
-          { key: "Item Code", value: itemCode },
+          { key: "Item Code", value: itemId },
           { key: "Quantity", value: qnt },
           { key: "Required Date", value: date },
+          {
+            key: "Confirm your suply via this link",
+            value: `(${confirmationLink})`,
+          },
         ],
       },
-      outro:
-        "Thank you for your prompt attention to this matter. We appreciate your continued partnership with us.",
+      outro: `
+        Thank you for your prompt attention to this matter. We appreciate your continued partnership with us.`,
     },
   };
 
@@ -45,7 +60,7 @@ export const sendEmail = async (email, itemCode, qnt, date) => {
   const mailOptions = {
     from: process.env.Email,
     to: email,
-    subject: "New Stock order",
+    subject: "New Stock Order",
     html: emailBody,
   };
 
@@ -53,9 +68,18 @@ export const sendEmail = async (email, itemCode, qnt, date) => {
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent:", info.response);
 
+    const supplierTokenData = {
+      token,
+      itemId,
+      quantity: qnt,
+      date,
+    };
+
+    await addSupplierToken(supplierTokenData);
+
     return {
       status: "success",
-      message: "Email sent successfully",
+      message: "Email sent successfully and token saved",
     };
   } catch (error) {
     console.error("Error sending email:", error);
