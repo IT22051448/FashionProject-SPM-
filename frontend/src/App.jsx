@@ -10,11 +10,16 @@ import Admininventory from "./pages/admin/inventory/inventory";
 import NotFound from "./pages/not-found/notfound";
 import CustomerLayout from "./layouts/customer/layout";
 import ShoppingHome from "./pages/customer/home/home";
+import Profile from "./pages/customer/profile/profile";
 import UnAuthPage from "./pages/unauth-page";
 import CheckAuth from "./components/common/check-auth";
 import { useSelector } from "react-redux";
 import ShoppingCheckout from "./pages/customer/checkout/checkout";
 import SupplierConfirmation from "./pages/supplier-access/SupplierConfimation";
+import ShoppingListing from "./pages/customer/listing/listing";
+import PayPalReturn from "./pages/customer/paypal-return/paypal-return";
+import OrderSuccess from "./pages/customer/order-success/order-success";
+import PayPalCancel from "./pages/customer/paypal-cancel/paypal-cancel";
 
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -24,6 +29,8 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<CheckAuth />} />
+
         <Route
           path="/auth"
           element={
@@ -59,7 +66,12 @@ function App() {
           }
         >
           <Route path="home" element={<ShoppingHome />} />
+          <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="paypal-return" element={<PayPalReturn />} />
+          <Route path="order-success" element={<OrderSuccess />} />
+          <Route path="paypal-cancel" element={<PayPalCancel />} />
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="/unauth-page" element={<UnAuthPage />} />

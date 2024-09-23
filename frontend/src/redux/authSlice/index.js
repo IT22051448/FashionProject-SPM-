@@ -13,7 +13,7 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:3000/api/auth/register",
+      `${import.meta.env.VITE_API_URL}auth/register`,
       formData,
       {
         withCredentials: true,
@@ -25,7 +25,7 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk("auth/login", async (formData) => {
   const response = await axios.post(
-    "http://localhost:3000/api/auth/login",
+    `${import.meta.env.VITE_API_URL}auth/login`,
     formData,
     {
       withCredentials: true,
@@ -42,6 +42,11 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = action.payload.isAuthenticated;
+    },
+    logOutUser: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
     },
   },
   extraReducers: (builder) => {
@@ -79,5 +84,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUserInfo } = authSlice.actions;
+export const { setUserInfo, logOutUser } = authSlice.actions;
 export default authSlice.reducer;

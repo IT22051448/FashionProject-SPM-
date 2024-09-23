@@ -1,11 +1,17 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
+import productReducer from "./productSlice";
+import cartReducer from "./cartSlice";
+import orderReducer from "./orderSlice";
+import address from "./addressSlice";
 import storage from "redux-persist/lib/storage";
+
 import { persistReducer } from "redux-persist";
 import adminStockSlice from "./stockSlice";
 import supplierSlice from "./supplierSlice";
 import mailslice from "./mailSlice/mailSlice";
 import tokenReducer from "./supplierToken/supplierTokenSlice"; 
+import persistStore from "redux-persist/es/persistStore";
 
 const persistConfig = {
   key: "root",
@@ -18,7 +24,11 @@ const reducer = combineReducers({
   stock: adminStockSlice,
   supplier: supplierSlice,
   email: mailslice,
-  token: tokenReducer, // Add the token reducer here
+  token: tokenReducer, 
+  product: productReducer,
+  cart: cartReducer,
+  order: orderReducer,
+  address: address,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);
@@ -32,4 +42,5 @@ const store = configureStore({
   devTools: true,
 });
 
+export const persistor = persistStore(store);
 export default store;

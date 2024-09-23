@@ -10,6 +10,9 @@ import stockRouter from "./api/routes/stock.route";
 import mailRouter from "./api/routes/mail.route";
 import supplierRouter from "./api/routes/supplier.route";
 import supTokenRouter from "./api/routes/supplierToken.route";
+import productRouter from "./api/routes/product.route";
+import cartRouter from "./api/routes/cart.route";
+import addressRouter from "./api/routes/address.route";
 
 const PORT = process.env.PORT || 3000;
 
@@ -36,6 +39,10 @@ app.use("/api/stock", stockRouter);
 app.use("/api/sendmail", mailRouter);
 app.use("/api/supplier", supplierRouter);
 app.use("/api/supplierToken", supTokenRouter);
+app.use("/api/order", orderRouter);
+app.use("/api/products", productRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/address", addressRouter);
 
 app.listen(PORT, () => {
   logger.info(`Server is running on port: ${PORT}`);
