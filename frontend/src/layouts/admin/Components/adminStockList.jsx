@@ -25,7 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import CommonForm from "@/components/common/form";
-import { sendEmail } from "@/redux/mailSlice/mailslice";
+import { sendEmail } from "@/redux/mailSlice/mailSlice";
 import { reorderFormControls } from "@/config";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -60,6 +60,7 @@ function AdminStockList() {
   const handleDelete = (id) => {
     dispatch(deleteStock(id));
     setSelectedStock(null);
+    window.location.reload();
   };
 
   const handleOpenOrderDialog = (stockItem) => {
@@ -133,12 +134,12 @@ function AdminStockList() {
                 <TableCell>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <button
-                        className="text-red-500 hover:text-red-700"
+                      <Button
+                        variant="destructive"
                         onClick={() => setSelectedStock(stockItem)}
                       >
-                        <MdDeleteForever size={32} />
-                      </button>
+                        Remove
+                      </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
@@ -162,7 +163,7 @@ function AdminStockList() {
                   </AlertDialog>
                 </TableCell>
                 <TableCell>
-                  < Button onClick={() => handleOpenOrderDialog(stockItem)}>
+                  <Button onClick={() => handleOpenOrderDialog(stockItem)}>
                     Order
                   </Button>
                 </TableCell>

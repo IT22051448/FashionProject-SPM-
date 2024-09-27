@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { fetchLowStock } from "@/redux/stockSlice";
 import CommonForm from "@/components/common/form";
 import { fetchAllSuppliers } from "@/redux/supplierSlice";
-import { sendEmail } from "@/redux/mailSlice/mailslice"; // Import the sendEmail action
+import { sendEmail } from "@/redux/mailSlice/mailSlice";
 import { reorderFormControls } from "@/config";
 import {
   Sheet,
@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast"; 
+import { useToast } from "@/hooks/use-toast";
 
 function LowStockList() {
   const initialFormData = {
@@ -29,9 +29,6 @@ function LowStockList() {
     quantity: 0,
     reorderDate: null,
   };
-
-  
-  
 
   const [openOrderDialog, setOpenOrderDialog] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
@@ -43,8 +40,6 @@ function LowStockList() {
   useEffect(() => {
     dispatch(fetchAllSuppliers());
   }, [dispatch]);
-
-
 
   const {
     supplierList = [],
@@ -93,7 +88,7 @@ function LowStockList() {
     }
 
     const orderData = {
-      email: formData.supplier, // Supplier's email
+      email: formData.supplier, 
       itemCode: selectedStockItem.itemId,
       qnt: formData.quantity,
       date: formData.reorderDate,
@@ -144,7 +139,7 @@ function LowStockList() {
               />
             </div>
 
-            {emailLoading && <p>Sending email...</p>}
+            
             {emailError && <p className="text-red-600">{emailError}</p>}
           </SheetContent>
         </Sheet>

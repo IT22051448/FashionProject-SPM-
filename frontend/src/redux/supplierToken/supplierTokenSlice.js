@@ -8,7 +8,6 @@ const initialState = {
   error: null,
 };
 
-// Async thunk to validate a token
 export const validateToken = createAsyncThunk(
   "token/validateToken",
   async (token, { rejectWithValue }) => {
