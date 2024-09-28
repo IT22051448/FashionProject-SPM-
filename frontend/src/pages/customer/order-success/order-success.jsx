@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getOrder, resetPlacedOrderId } from "@/redux/orderSlice";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,8 +26,12 @@ const OrderSuccess = () => {
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <Card>
         <CardHeader>
-          <CardTitle>Processing Payment...Please wait!</CardTitle>
+          <CardTitle>Order created Successfully</CardTitle>
+          <CardDescription>
+            Thank you for your order. Your order has been placed successfully.
+          </CardDescription>
         </CardHeader>
+        <CardContent></CardContent>
       </Card>
     </div>
   );
