@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { checkLoyaltyCustomer } from "../../../redux/loyaltySlice/loyaltySlice";
 import { Menu, Shirt } from "lucide-react";
@@ -9,7 +9,6 @@ import MenuItems from "./menuItem";
 import HeaderRightContent from "./headerRightContent";
 
 const ShoppingHeader = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const isLoyaltyCustomer = useSelector(
@@ -17,7 +16,6 @@ const ShoppingHeader = () => {
   );
 
   const { isAuthenticated } = useSelector((state) => state.auth);
-
   const userEmail = useSelector((state) => state.auth.user?.email);
 
   React.useEffect(() => {
@@ -50,11 +48,11 @@ const ShoppingHeader = () => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-full max-w-xs">
-            <MenuItems />
+            <MenuItems isLoyaltyCustomer={isLoyaltyCustomer} />
           </SheetContent>
         </Sheet>
         <div className="hidden lg:block">
-          <MenuItems />
+          <MenuItems isLoyaltyCustomer={isLoyaltyCustomer} />
         </div>
         {isAuthenticated ? (
           <div>

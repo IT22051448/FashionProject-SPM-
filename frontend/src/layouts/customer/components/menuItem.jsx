@@ -1,18 +1,36 @@
 import { shopHeaderLinks } from "@/config";
 import { Link } from "react-router-dom";
 
-const MenuItems = () => {
+const MenuItems = ({ isLoyaltyCustomer }) => {
   return (
     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
-      {shopHeaderLinks.map((menuItem) => (
+      {shopHeaderLinks
+        .filter((menuItem) => !menuItem.isLoyalty)
+        .map((menuItem) => (
+          <Link
+            className="text-sm font-medium"
+            key={menuItem.id}
+            to={menuItem.path}
+          >
+            {menuItem.label}
+          </Link>
+        ))}
+
+      {isLoyaltyCustomer ? (
         <Link
-          className="text-sm font-medium"
-          key={menuItem.id}
-          to={menuItem.path}
+          to="/shop/loyaltyMember"
+          className="text-sm font-medium hover:underline"
         >
-          {menuItem.label}
+          Loyalty Profile
         </Link>
-      ))}
+      ) : (
+        <Link
+          to="/shop/loyaltySignUp"
+          className="text-sm font-medium hover:underline"
+        >
+          Become a Loyalty Member
+        </Link>
+      )}
     </nav>
   );
 };
