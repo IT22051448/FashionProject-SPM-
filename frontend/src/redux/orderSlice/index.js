@@ -57,7 +57,7 @@ export const createNewOrder = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}order/`,
+      `${import.meta.env.VITE_API_URL}orders/`,
       orderData,
       {
         headers: {
@@ -76,7 +76,7 @@ export const getAllOrders = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     console.log(token, "token");
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}order/`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}orders/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -94,7 +94,7 @@ export const getOrder = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}order/${id}`,
+      `${import.meta.env.VITE_API_URL}orders/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -112,7 +112,7 @@ export const updateOrderStatus = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}order/${id}`,
+      `${import.meta.env.VITE_API_URL}orders/${id}`,
       {
         orderStatus,
       },
