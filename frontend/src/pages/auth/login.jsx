@@ -66,7 +66,7 @@ const AuthLogin = () => {
             className="font-medium ml-2 text-primary hover:underline"
             to="/auth/signup"
           >
-            Signup
+            Login
           </Link>
         </p>
       </div>

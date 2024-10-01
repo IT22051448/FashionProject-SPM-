@@ -7,6 +7,7 @@ import address from "./addressSlice";
 import loyaltyReducer from "./loyaltySlice/loyaltySlice";
 import promoReducer from "./loyaltySlice/promoSlice";
 import storage from "redux-persist/lib/storage";
+
 import { persistReducer } from "redux-persist";
 import persistStore from "redux-persist/es/persistStore";
 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { createNewOrder } from "@/redux/orderSlice";
 import { useToast } from "@/hooks/use-toast";
+import { Spinner } from "@/components/ui/spinner";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.cart);
@@ -82,7 +83,8 @@ function ShoppingCheckout() {
 
     dispatch(createNewOrder(orderData)).then((data) => {
       console.log(data, "order creation succesfull");
-      if (data?.success) {
+      if (data?.payload?.success) {
+        console.log("Payment started");
         setIsPaymemntStart(true);
       } else {
         setIsPaymemntStart(false);
@@ -117,7 +119,11 @@ function ShoppingCheckout() {
             </div>
           </div>
           <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
+            <Button
+              onClick={handleInitiatePaypalPayment}
+              className="w-full flex items-center gap-5"
+            >
+              {isPaymentStart && <Spinner className="text-white" />}
               {isPaymentStart ? "Processing Payment" : "Checkout wiht Paypal"}
             </Button>
           </div>

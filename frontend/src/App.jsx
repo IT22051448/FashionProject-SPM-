@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./layouts/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthSignup from "./pages/auth/signup";
@@ -26,6 +26,9 @@ import UpdateLoyaltyPromos from "./pages/admin/promocodes/UpdateLoyaltyPromos";
 // Import ToastContainer from react-toastify
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PayPalReturn from "./pages/customer/paypal-return/paypal-return";
+import OrderSuccess from "./pages/customer/order-success/order-success";
+import PayPalCancel from "./pages/customer/paypal-cancel/paypal-cancel";
 
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -36,7 +39,8 @@ function App() {
     <>
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Navigate to="/auth/signup" />} />
+        <Route path="/" element={<CheckAuth />} />
+
         <Route
           path="/auth"
           element={
@@ -80,7 +84,12 @@ function App() {
           <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
           <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
           <Route path="LoyaltyMember" element={<LoyaltyMember />} />
+          <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="paypal-return" element={<PayPalReturn />} />
+          <Route path="order-success" element={<OrderSuccess />} />
+          <Route path="paypal-cancel" element={<PayPalCancel />} />
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="/unauth-page" element={<UnAuthPage />} />

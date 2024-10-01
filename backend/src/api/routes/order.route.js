@@ -24,5 +24,15 @@ orderRouter.delete(
   authMiddleware(["admin"]),
   orderController.deleteOrder
 );
+orderRouter.post(
+  "/capture-payment",
+  authMiddleware(["user"]),
+  orderController.capturePayemnt
+);
+orderRouter.post(
+  "/cancel-payment",
+  authMiddleware(["user"]),
+  orderController.cancelPayments
+);
 
 export default orderRouter;

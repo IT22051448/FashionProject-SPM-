@@ -153,6 +153,32 @@ const orderController = {
     }
   },
 
+  async cancelPayments(req, res) {
+    try {
+      const { orderId } = req.body;
+
+      if (!orderId) {
+        res.status(400).json({
+          success: false,
+          message: "Order ID not sent in request",
+        });
+      }
+      logger.info(orderId);
+      await Order.findByIdAndDelete({ _id: orderId });
+
+      res.status(200).json({
+        success: true,
+        message: "Temporary order deleted successfully",
+      });
+    } catch (error) {
+      logger.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
+  },
+
   async getOrders(req, res) {
     try {
       if (req.user.role === "admin") {

@@ -6,7 +6,50 @@ const initialState = {
   orderDetails: null,
   approvalURL: null,
   isLoading: false,
+  placedOrderId: null,
 };
+
+export const cancelPayment = createAsyncThunk(
+  "/order/cancelPayment",
+  async ({ orderId }, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}order/cancel-payment`,
+      { orderId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  }
+);
+
+export const capturePayment = createAsyncThunk(
+  "/order/confirmPayment",
+  async ({ paymentId, payerId, orderId }, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}order/capture-payment`,
+      {
+        paymentId,
+        payerId,
+        orderId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  }
+);
 
 export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
@@ -93,6 +136,12 @@ const orderSlice = createSlice({
 
       state.orderDetails = null;
     },
+    resetPlacedOrderId: (state) => {
+      state.placedOrderId = null;
+    },
+    resetApprovalURL: (state) => {
+      state.approvalURL = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -117,10 +166,27 @@ const orderSlice = createSlice({
       .addCase(getOrder.rejected, (state) => {
         state.isLoading = false;
         state.orderDetails = null;
+      })
+      .addCase(createNewOrder.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(createNewOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.approvalURL = action.payload.success
+          ? action.payload.approvalURL
+          : null;
+        state.placedOrderId = action.payload.success
+          ? action.payload.orderId
+          : null;
+      })
+      .addCase(createNewOrder.rejected, (state) => {
+        state.isLoading = false;
+        state.approvalURL = null;
       });
   },
 });
 
-export const { resetOrderDetails } = orderSlice.actions;
+export const { resetOrderDetails, resetPlacedOrderId, resetApprovalURL } =
+  orderSlice.actions;
 
 export default orderSlice.reducer;
