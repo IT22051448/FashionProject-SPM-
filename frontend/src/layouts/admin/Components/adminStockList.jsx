@@ -135,7 +135,7 @@ function AdminStockList() {
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
-                        variant="destructive"
+                        className=" bg-slate-700 hover:bg-red-700"
                         onClick={() => setSelectedStock(stockItem)}
                       >
                         Remove
@@ -162,11 +162,7 @@ function AdminStockList() {
                     </AlertDialogContent>
                   </AlertDialog>
                 </TableCell>
-                <TableCell>
-                  <Button onClick={() => handleOpenOrderDialog(stockItem)}>
-                    Order
-                  </Button>
-                </TableCell>
+               
               </TableRow>
             ))
           ) : (
