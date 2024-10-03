@@ -2,11 +2,13 @@ import express from "express";
 import {
   addSupplierToken,
   validateToken,
+  fetchStockOrders,
 } from "../controllers/supplierToken.controller";
 
 const router = express.Router();
 
 router.post("/add-supplier-token", addSupplierToken);
+router.get("/fetch-stock-orders", fetchStockOrders);
 router.get("/validate-token/:token", async (req, res) => {
   const tokenToValidate = req.params.token;
 

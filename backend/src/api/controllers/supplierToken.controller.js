@@ -1,14 +1,16 @@
 import SupplierToken from "../models/supplierToken.model";
 
+
 export const addSupplierToken = async tokenData => {
   try {
-    const { token, itemId, quantity, date } = tokenData;
+    const { token, itemId, quantity, date,supplier } = tokenData;
 
     const newSupplierToken = new SupplierToken({
       token,
       itemId,
       quantity,
       date,
+      supplier,
     });
 
     await newSupplierToken.save();
@@ -38,3 +40,16 @@ export const validateToken = async tokenToValidate => {
     throw new Error("Error validating token: " + error.message);
   }
 };
+
+
+export const fetchStockOrders = async(req,res) =>{
+  try {
+
+    const orderList = await SupplierToken.find({}).populate("supplier");
+    res.status(200).json({ orders: orderList });
+    
+  } catch (error) {
+    res.status(500).json({message: "Internal server error"});
+    
+  }
+}

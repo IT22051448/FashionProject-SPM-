@@ -16,6 +16,11 @@ const supplierTokenSchema = new Schema(
     date: {
       type: Date,
     },
+    status: {
+      type: String,
+      default: "PENDING",
+    },
+    supplier: { type: mongoose.Schema.Types.ObjectId, ref: "Supplier" },
   },
   { timestamps: true }
 );

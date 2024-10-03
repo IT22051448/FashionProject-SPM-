@@ -22,6 +22,15 @@ export const validateToken = createAsyncThunk(
   }
 );
 
+export const fetchStockOrders = createAsyncThunk(
+  "adminStock/fetchStockOrders",
+  async () => {
+    const result = await axios.get(
+      "http://localhost:3000/api/supplierToken/fetch-stock-orders"
+    );
+    return result?.data;
+  }
+);
 // Create the token slice
 const tokenSlice = createSlice({
   name: "token",
@@ -42,15 +51,26 @@ const tokenSlice = createSlice({
       })
       .addCase(validateToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.token = action.payload.data; // Adjust this if needed
+        state.token = action.payload.data;
       })
       .addCase(validateToken.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload; // Set error message
+        state.error = action.payload;
+      })
+      .addCase(fetchStockOrders.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchStockOrders.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.stockOrders = action.payload.orders; // Store the orders in state
+      })
+      .addCase(fetchStockOrders.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
-
 // Export actions and reducer
 export const { setToken, clearToken } = tokenSlice.actions;
 export default tokenSlice.reducer;

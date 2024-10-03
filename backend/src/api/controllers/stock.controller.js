@@ -1,5 +1,6 @@
 import Stock from "../models/stock.model";
 
+
 // Add stock
 export const addStock = async (req, res) => {
   try {

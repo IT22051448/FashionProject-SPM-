@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Test from "./test";
+import Test from "./stockOrders";
 import Stock from "./stocks";
 import LowStockList from "@/layouts/admin/Components/lowStockList";
 

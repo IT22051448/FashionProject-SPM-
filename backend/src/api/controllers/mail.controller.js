@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import Mailgen from "mailgen";
 import crypto from "crypto";
 import { addSupplierToken } from "../controllers/supplierToken.controller";
+import Supplier from "../models/supplier.model";
 
 dotenv.config();
 
@@ -68,11 +69,14 @@ export const sendEmail = async (email, itemId, qnt, date) => {
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent:", info.response);
 
+    const supplier = await Supplier.findOne({ email });
+
     const supplierTokenData = {
       token,
       itemId,
       quantity: qnt,
       date,
+      supplier: supplier._id
     };
 
     await addSupplierToken(supplierTokenData);

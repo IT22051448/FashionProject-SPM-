@@ -46,7 +46,7 @@ export const adminSideBarMenuItems = [
       },
       {
         id: "suppliers",
-        label: "Suppliers",
+        label: "Stock Orders",
         path: "/admin/inventory?tab=sup",
       },
       {

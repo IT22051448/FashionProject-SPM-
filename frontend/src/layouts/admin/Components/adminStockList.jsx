@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MdDeleteForever } from "react-icons/md";
 import {
   AlertDialog,
   AlertDialogAction,
