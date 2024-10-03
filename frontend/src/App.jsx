@@ -27,7 +27,6 @@ import UpdateLoyaltyPromos from "./pages/admin/promocodes/UpdateLoyaltyPromos";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PayPalReturn from "./pages/customer/paypal-return/paypal-return";
-import OrderSuccess from "./pages/customer/order-success/order-success";
 import PayPalCancel from "./pages/customer/paypal-cancel/paypal-cancel";
 
 function App() {
@@ -88,7 +87,6 @@ function App() {
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="profile" element={<Profile />} />
           <Route path="paypal-return" element={<PayPalReturn />} />
-          <Route path="order-success" element={<OrderSuccess />} />
           <Route path="paypal-cancel" element={<PayPalCancel />} />
         </Route>
         <Route path="*" element={<NotFound />} />

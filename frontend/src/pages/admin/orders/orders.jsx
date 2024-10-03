@@ -13,6 +13,7 @@ import {
 import AdminOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  generateInvoice,
   getAllOrders,
   getOrder,
   getOrderReport,
@@ -30,13 +31,11 @@ function AdminOrdersView() {
   }
 
   function handleReportDownload() {
-    const url = dispatch(getOrderReport());
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "orders_report.xlsx");
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    dispatch(getOrderReport());
+  }
+
+  function getInvoice(id) {
+    dispatch(generateInvoice(id));
   }
 
   useEffect(() => {
@@ -103,8 +102,21 @@ function AdminOrdersView() {
                         >
                           View Details
                         </Button>
+
                         <AdminOrderDetailsView orderDetails={orderDetails} />
                       </Dialog>
+                    </TableCell>
+                    <TableCell>
+                      {orderItem?.orderStatus === "rejected" ? (
+                        <Button variant="destructive">Delete</Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          onClick={getInvoice(orderItem?._id)}
+                        >
+                          Print Invoice
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

@@ -15,6 +15,11 @@ orderRouter.get(
   orderController.generateOrderReport
 );
 orderRouter.get(
+  "/invoice/:id",
+  authMiddleware(["admin"]),
+  orderController.generateInvoice
+);
+orderRouter.get(
   "/:id",
   authMiddleware(["admin", "user"]),
   orderController.getOrder

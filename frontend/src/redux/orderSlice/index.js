@@ -34,7 +34,7 @@ export const capturePayment = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}order/capture-payment`,
+      `${import.meta.env.VITE_API_URL}orders/capture-payment`,
       {
         paymentId,
         payerId,
@@ -146,8 +146,46 @@ export const getOrderReport = createAsyncThunk(
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
     const url = window.URL.createObjectURL(blob);
-    console.log(url);
-    return url;
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "orders_report.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+  }
+);
+
+export const generateInvoice = createAsyncThunk(
+  "/order/generateInvoice",
+  async (id, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}orders/invoice/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: "application/pdf",
+    });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "invoice.pdf");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
   }
 );
 

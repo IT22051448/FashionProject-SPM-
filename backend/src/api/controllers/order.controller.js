@@ -4,6 +4,8 @@ import Product from "../models/product.model";
 import Cart from "../models/cart.model";
 import paypal from "../../utils/paypal";
 import ExcelJs from "exceljs";
+import easyinvoice from "easyinvoice";
+import { Buffer } from "buffer";
 
 const orderController = {
   async createOrder(req, res) {
@@ -143,7 +145,7 @@ const orderController = {
       res.status(200).json({
         success: true,
         message: "Order confirmed",
-        data: order,
+        order: order,
       });
     } catch (e) {
       console.log(e);
@@ -282,6 +284,54 @@ const orderController = {
       res.status(500).json({
         success: false,
         message: "Failed to generate order report",
+      });
+    }
+  },
+
+  async generateInvoice(req, res) {
+    try {
+      const orderId = req.params.id;
+      const order = await Order.findById(orderId);
+
+      const invoiceData = {
+        documentTitle: "ORDER REPORT",
+        currency: "USD",
+
+        marginTop: 25,
+        marginRight: 25,
+        marginLeft: 25,
+        marginBottom: 25,
+        logo: "https://public.easyinvoice.cloud/img/logo_en_original.png",
+        sender: {
+          company: "Fashion",
+          address: "Your Address",
+          zip: "12345",
+          city: "Your City",
+        },
+        client: {
+          address: order.addressInfo.address,
+          zip: order.addressInfo.pincode,
+          city: order.addressInfo.city,
+        },
+        invoiceNumber: "2021.0001",
+        invoiceDate: new Date().toLocaleDateString(),
+        products: order.cartItems?.map(product => ({
+          quantity: product.quantity,
+          description: product.title,
+          price: product.price,
+        })),
+        bottomNotice: "Thank you for your business.",
+      };
+
+      const result = await easyinvoice.createInvoice(invoiceData);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+      res.send(Buffer.from(result.pdf, "base64"));
+    } catch (error) {
+      logger.error("Error generating invoice:", error.message);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate invoice",
       });
     }
   },
