@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/table";
 import AdminOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllOrders, getOrder, resetOrderDetails } from "@/redux/orderSlice";
+import {
+  getAllOrders,
+  getOrder,
+  getOrderReport,
+  resetOrderDetails,
+} from "@/redux/orderSlice";
 import { Badge } from "@/components/ui/badge";
 
 function AdminOrdersView() {
@@ -22,6 +27,16 @@ function AdminOrdersView() {
 
   function handleFetchOrderDetails(getId) {
     dispatch(getOrder(getId));
+  }
+
+  function handleReportDownload() {
+    const url = dispatch(getOrderReport());
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "orders_report.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 
   useEffect(() => {
@@ -34,8 +49,9 @@ function AdminOrdersView() {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>All Orders</CardTitle>
+        <Button onClick={handleReportDownload}>Generate Report</Button>
       </CardHeader>
       <CardContent>
         <Table>

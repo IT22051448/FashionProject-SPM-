@@ -10,6 +10,11 @@ orderRouter.get(
   orderController.getOrders
 );
 orderRouter.get(
+  "/gen-report",
+  authMiddleware(["admin"]),
+  orderController.generateOrderReport
+);
+orderRouter.get(
   "/:id",
   authMiddleware(["admin", "user"]),
   orderController.getOrder

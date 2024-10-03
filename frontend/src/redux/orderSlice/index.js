@@ -127,6 +127,30 @@ export const updateOrderStatus = createAsyncThunk(
   }
 );
 
+export const getOrderReport = createAsyncThunk(
+  "/order/getOrderReport",
+  async (_, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}orders/gen-report`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = window.URL.createObjectURL(blob);
+    console.log(url);
+    return url;
+  }
+);
+
 const orderSlice = createSlice({
   name: "adminOrderSlice",
   initialState,

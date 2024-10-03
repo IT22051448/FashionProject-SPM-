@@ -3,6 +3,7 @@ import logger from "../../utils/logger";
 import Product from "../models/product.model";
 import Cart from "../models/cart.model";
 import paypal from "../../utils/paypal";
+import ExcelJs from "exceljs";
 
 const orderController = {
   async createOrder(req, res) {
@@ -225,6 +226,63 @@ const orderController = {
     } catch (error) {
       logger.error(error.message);
       res.status(500).json({ message: "Internal Server Error" });
+    }
+  },
+
+  async generateOrderReport(req, res) {
+    try {
+      const workbook = new ExcelJs.Workbook();
+      const orders = await Order.find();
+
+      if (orders.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No orders found",
+        });
+      }
+
+      const sheet = workbook.addWorksheet("Orders");
+
+      sheet.columns = [
+        { header: "Order Number", key: "orderNumber", width: 20 },
+        { header: "User ID", key: "userId", width: 25 },
+        { header: "Total Amount", key: "totalAmount", width: 15 },
+        { header: "Order Date", key: "orderDate", width: 20 },
+        { header: "Order Status", key: "orderStatus", width: 20 },
+        { header: "Payment Status", key: "paymentStatus", width: 20 },
+        { header: "Address", key: "addressInfo", width: 30 },
+      ];
+
+      // Add rows with data from orders
+      orders.forEach(order => {
+        sheet.addRow({
+          orderNumber: order.orderNumber,
+          userId: order.userId,
+          totalAmount: order.totalAmount,
+          orderDate: order.orderDate,
+          orderStatus: order.orderStatus,
+          paymentStatus: order.paymentStatus,
+          addressInfo: `${order.addressInfo.address}, ${order.addressInfo.city}, ${order.addressInfo.pincode}`,
+        });
+      });
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="orders_report.xlsx"'
+      );
+
+      await workbook.xlsx.write(res);
+      res.status(200).end();
+    } catch (error) {
+      console.error("Error generating order report:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate order report",
+      });
     }
   },
 };
