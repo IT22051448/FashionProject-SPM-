@@ -15,7 +15,7 @@ export const cancelPayment = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}order/cancel-payment`,
+      `${import.meta.env.VITE_API_URL}orders/cancel-payment`,
       { orderId },
       {
         headers: {
@@ -34,7 +34,7 @@ export const capturePayment = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}order/capture-payment`,
+      `${import.meta.env.VITE_API_URL}orders/capture-payment`,
       {
         paymentId,
         payerId,
@@ -57,7 +57,7 @@ export const createNewOrder = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}order/`,
+      `${import.meta.env.VITE_API_URL}orders/`,
       orderData,
       {
         headers: {
@@ -76,7 +76,7 @@ export const getAllOrders = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     console.log(token, "token");
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}order/`, {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}orders/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -94,7 +94,7 @@ export const getOrder = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}order/${id}`,
+      `${import.meta.env.VITE_API_URL}orders/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -112,7 +112,7 @@ export const updateOrderStatus = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}order/${id}`,
+      `${import.meta.env.VITE_API_URL}orders/${id}`,
       {
         orderStatus,
       },
@@ -124,6 +124,86 @@ export const updateOrderStatus = createAsyncThunk(
     );
 
     return response.data;
+  }
+);
+
+export const deleteOrder = createAsyncThunk(
+  "/order/deleteOrder",
+  async (id, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.delete(
+      `${import.meta.env.VITE_API_URL}orders/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  }
+);
+
+export const getOrderReport = createAsyncThunk(
+  "/order/getOrderReport",
+  async (_, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}orders/gen-report`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "orders_report.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+  }
+);
+
+export const generateInvoice = createAsyncThunk(
+  "/order/generateInvoice",
+  async (id, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}orders/invoice/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], {
+      type: "application/pdf",
+    });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "invoice.pdf");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
   }
 );
 

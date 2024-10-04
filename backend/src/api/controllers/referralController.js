@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
   //port: 587 ,
   //secure: false,
   auth: {
-    user: process.env.USER,
-    pass: process.env.APP_PASSWORD,
+    user: process.env.EMAIL,
+    pass: process.env.APP_PASS,
   },
 });
 
@@ -47,7 +47,6 @@ exports.createReferral = async (req, res) => {
     const referralLink = `http://localhost:5173/auth/signup?referralToken=${referralToken}`;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
       to: referredEmail,
       subject: `You’ve been referred to join our loyalty program!`,
       text: `Hello,

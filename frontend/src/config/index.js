@@ -130,6 +130,80 @@ export const addProductFormElements = [
     placeholder: "Enter total stock",
   },
 ];
+export const addStockFormElements = [
+  {
+    label: "Title",
+    name: "title",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter stock title",
+  },
+  {
+    label: "Description",
+    name: "description",
+    componentType: "textarea",
+    placeholder: "Enter stock description",
+  },
+
+  {
+    label: "Item ID",
+    name: "itemId",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter item ID",
+  },
+  {
+    label: "Supplier",
+    name: "supplier",
+    componentType: "select",
+    placeholder: "Select supplier",
+    options: [],
+  },
+  {
+    label: " Bulk Price",
+    name: "price",
+    componentType: "input",
+    type: "number",
+    placeholder: "Enter  price",
+  },
+  {
+    label: "Sale Price",
+    name: "salePrice",
+    componentType: "input",
+    type: "number",
+    placeholder: "Enter sale price (optional)",
+  },
+  {
+    label: "Total Stock",
+    name: "totalStock",
+    componentType: "input",
+    type: "number",
+    placeholder: "Enter total stock",
+  },
+];
+
+export const reorderFormControls = [
+  {
+    name: "supplier",
+    label: "Supplier",
+    componentType: "select",
+    placeholder: "Select a supplier",
+  },
+  {
+    name: "quantity",
+    label: "Quantity",
+    componentType: "input",
+    type: "number",
+    placeholder: "Enter quantity",
+  },
+  {
+    name: "reorderDate",
+    label: "Reorder Date",
+    componentType: "input",
+    type: "date",
+    placeholder: "Select reorder date",
+  },
+];
 
 export const shopHeaderLinks = [
   {

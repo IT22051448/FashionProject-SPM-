@@ -2,7 +2,6 @@
 import PropTypes from "prop-types";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-
 import {
   Select,
   SelectTrigger,
@@ -25,28 +24,31 @@ const CommonForm = ({
   setFormData,
   onSubmit,
   buttonText,
+  supplierOptions,
 }) => {
   function renderInput(control) {
     let element = null;
     const value = formData[control.name] || "";
 
+    const commonProps = {
+      name: control.name,
+      placeholder: control.placeholder,
+      id: control.name,
+      value: value,
+      onChange: (e) =>
+        setFormData({ ...formData, [control.name]: e.target.value }),
+      readOnly: control.readOnly, // Add readOnly here
+    };
+
     switch (control.componentType) {
       case types.INPUT:
-        element = (
-          <Input
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            type={control.type}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Input {...commonProps} type={control.type} />;
         break;
 
       case types.SELECT:
+        // Determine options based on the field
+        const options =
+          control.name === "supplier" ? supplierOptions : control.options;
         element = (
           <Select
             onValueChange={(value) =>
@@ -61,9 +63,9 @@ const CommonForm = ({
               <SelectValue placeholder={control.label} />
             </SelectTrigger>
             <SelectContent>
-              {control.options && control.options.length > 0
-                ? control.options.map((option, index) => (
-                    <SelectItem key={index} value={option.id}>
+              {options && options.length > 0
+                ? options.map((option, index) => (
+                    <SelectItem key={index} value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))
@@ -74,32 +76,11 @@ const CommonForm = ({
         break;
 
       case types.TEXTAREA:
-        element = (
-          <Textarea
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Textarea {...commonProps} />;
         break;
 
       default:
-        element = (
-          <Input
-            name={control.name}
-            placeholder={control.placeholder}
-            id={control.name}
-            type={control.type}
-            value={value}
-            onChange={(e) =>
-              setFormData({ ...formData, [control.name]: e.target.value })
-            }
-          />
-        );
+        element = <Input {...commonProps} type={control.type} />;
     }
 
     return element;
@@ -124,6 +105,11 @@ const CommonForm = ({
 
 CommonForm.propTypes = {
   formControls: PropTypes.array.isRequired,
+  formData: PropTypes.object.isRequired,
+  setFormData: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  buttonText: PropTypes.string,
+  supplierOptions: PropTypes.array,
 };
 
 export default CommonForm;

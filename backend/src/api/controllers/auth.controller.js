@@ -182,13 +182,17 @@ const processReferral = async (referralToken, referredEmail) => {
         const loyalty = await Loyalty.findOne({ email: referrerEmail });
 
         if (loyalty) {
-          // Add 50 points to the referrer's loyalty points
-          loyalty.loyaltyPoints += 50;
+          // Add 40 points to the referrer's loyalty points
+          loyalty.loyaltyPoints += 40;
+
+          // Increment the referred count by 1
+          loyalty.referredcount += 1;
+
           await loyalty.save();
 
           // Add a notification to the referrer
           referrer.notifications.push(
-            "Congratulations, Your referral has successfully Signed Up. As a reward, 50 points have been added to your Loyalty account."
+            "Congratulations, Your referral has successfully Signed Up. As a reward, 40 points have been added to your Loyalty account."
           );
           await referrer.save();
         } else {

@@ -15,7 +15,7 @@ export const createPromoCode = createAsyncThunk(
   async (promoData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/loyalty/promo-codes",
+        `${import.meta.env.VITE_API_URL}loyalty/promo-codes`,
         promoData
       );
       return response.data;
@@ -31,7 +31,7 @@ export const fetchPromoCodes = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/loyalty/promo-codes"
+        `${import.meta.env.VITE_API_URL}loyalty/promo-codes`
       );
       return response.data;
     } catch (error) {
@@ -46,7 +46,7 @@ export const fetchPromoCodeById = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/loyalty/promocodes/${id}`
+        `${import.meta.env.VITE_API_URL}loyalty/promocodes/${id}`
       );
       return response.data;
     } catch (error) {
@@ -61,7 +61,7 @@ export const updatePromoCode = createAsyncThunk(
   async ({ id, promoData }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/loyalty/promocodes/${id}`,
+        `${import.meta.env.VITE_API_URL}loyalty/promocodes/${id}`,
         promoData
       );
       return response.data;
@@ -76,7 +76,9 @@ export const deletePromoCode = createAsyncThunk(
   "promo/deletePromoCode",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`http://localhost:5000/api/loyalty/promo-codes/${id}`);
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}loyalty/promo-codes/${id}`
+      );
       return id; // Return the id to remove it from the state
     } catch (error) {
       return rejectWithValue(error.response.data);
