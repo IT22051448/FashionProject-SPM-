@@ -7,6 +7,26 @@ const initialState = {
   productDetails: null,
 };
 
+export const fetchAllFilteredProducts = createAsyncThunk(
+  "/products/fetchAllProducts",
+  async ({ filterParams, sortParams }) => {
+    console.log(fetchAllFilteredProducts, "fetchAllFilteredProducts");
+
+    const query = new URLSearchParams({
+      ...filterParams,
+      sortBy: sortParams,
+    });
+
+    const result = await axios.get(
+      `http://localhost:5000/api/shop/products/get?${query}`
+    );
+
+    console.log(result);
+
+    return result?.data;
+  }
+);
+
 export const addProduct = createAsyncThunk(
   "/products/add",
   async (formData, { getState }) => {
@@ -43,12 +63,12 @@ export const getProduct = createAsyncThunk(
 );
 
 export const updateProduct = createAsyncThunk(
-  "/products/update",
-  async (formData, { getState }) => {
+  "/products/updateProduct",
+  async ( {id, formData},{ getState }) => {
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.put(
-      `${import.meta.env.VITE_API_URL}products/${formData.id}`,
+      `${import.meta.env.VITE_API_URL}products/${id}`,
       formData,
       {
         headers: {

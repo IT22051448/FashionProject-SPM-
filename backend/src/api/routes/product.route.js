@@ -17,19 +17,16 @@ productRouter.post(
   productController.addProduct
 );
 
-productRouter.get("/", productController.getProducts);
+productRouter.get('', productController.getProducts);
 
 productRouter.get("/:id", productController.getProduct);
 
-productRouter.put(
-  "/:id",
-  authMiddleware(["admin"]),
-  productController.updateProduct
-);
-productRouter.delete(
-  "/:id",
-  authMiddleware(["admin"]),
-  productController.deleteProduct
-);
+productRouter.put("/:id", productController.updateProduct);
+
+productRouter.delete("/:id",productController.deleteProduct);
+
+productRouter.get("/", productController.getFilteredProducts);
+
+
 
 export default productRouter;
