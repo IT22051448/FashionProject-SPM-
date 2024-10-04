@@ -58,7 +58,7 @@ const productController = {
         message: "Some error occured",
       });
     }
-  };
+  },
 
   async handleImageUpload(req, res) {
     try {

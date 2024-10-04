@@ -17,6 +17,7 @@ import { useSearchParams } from "react-router-dom";
 import ProductDetailsDialog from "./components/product-details";
 import ShoppingProductTile from "./components/product-tile";
 import ProductFilter from "./components/product-filter";
+import { getFilteredProducts } from "@/redux/productSlice";
 
 
 function createSearchParamsHelper(filterParams) {
@@ -134,7 +135,7 @@ function ShoppingListing() {
   useEffect(() => {
     if (filters !== null && sort !== null)
       dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+        getFilteredProducts({ filterParams: filters, sortParams: sort })
       );
   }, [dispatch, sort, filters]);
 

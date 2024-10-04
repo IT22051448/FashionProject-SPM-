@@ -25,7 +25,7 @@ productRouter.put("/:id", productController.updateProduct);
 
 productRouter.delete("/:id",productController.deleteProduct);
 
-productRouter.get("/", productController.getFilteredProducts);
+productRouter.get("/get", productController.getFilteredProducts);
 
 
 
