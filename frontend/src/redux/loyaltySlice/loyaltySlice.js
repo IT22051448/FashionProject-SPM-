@@ -35,7 +35,7 @@ export const checkLoyaltyCustomer = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/loyalty/check-customer",
+        `${import.meta.env.VITE_API_URL}loyalty/check-customer`,
         { email }
       );
       return response.data.exists;
@@ -51,7 +51,7 @@ export const referAFriend = createAsyncThunk(
   async ({ referrerEmail, referredEmail }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/referral/refer",
+        `${import.meta.env.VITE_API_URL}referral/refer`,
         { referrerEmail, referredEmail }
       );
       return response.data;
@@ -67,7 +67,7 @@ export const fetchCustomerDetails = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/loyalty/customer/${email}`
+        `${import.meta.env.VITE_API_URL}loyalty/customer/${email}`
       );
       return response.data;
     } catch (error) {
@@ -98,7 +98,74 @@ export const fetchPromoCodes = createAsyncThunk(
   async (tier, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/loyalty/promo-codes/${tier}`
+        `${import.meta.env.VITE_API_URL}loyalty/promo-codes/${tier}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// New async thunk to update loyalty points
+export const updateLoyaltyPoints = createAsyncThunk(
+  "loyalty/updateLoyaltyPoints",
+  async ({ email, points }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_URL}loyalty/email/${email}/points`,
+        { points }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Delete customer action
+export const deleteCustomer = createAsyncThunk(
+  "loyalty/deleteCustomer",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_API_URL}loyalty/delete-customer/${email}`
+      );
+      if (response.status === 200) {
+        return { email };
+      } else {
+        return rejectWithValue({ message: "Failed to delete customer" });
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "An unknown error occurred" }
+      );
+    }
+  }
+);
+
+export const applyPromoCode = createAsyncThunk(
+  "loyalty/applyPromoCode",
+  async (promoCode, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}loyalty/apply-promo-code`,
+        { code: promoCode }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Add new async thunk to fetch all customers
+export const fetchAllCustomers = createAsyncThunk(
+  "loyalty/fetchAllCustomers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}loyalty/get-customers`
       );
       return response.data;
     } catch (error) {
