@@ -199,7 +199,6 @@ const loyaltySlice = createSlice({
     points: 0,
     tier: "",
   },
-  initialState,
   reducers: {
     updateLoyaltyPointsSuccess(state) {
       state.pointsAdded = true;
