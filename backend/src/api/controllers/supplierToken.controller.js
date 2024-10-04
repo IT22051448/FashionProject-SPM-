@@ -1,9 +1,8 @@
 import SupplierToken from "../models/supplierToken.model";
 
-
 export const addSupplierToken = async tokenData => {
   try {
-    const { token, itemId, quantity, date,supplier } = tokenData;
+    const { token, itemId, quantity, date, supplier } = tokenData;
 
     const newSupplierToken = new SupplierToken({
       token,
@@ -28,7 +27,7 @@ export const validateToken = async tokenToValidate => {
     if (foundToken) {
       return {
         valid: true,
-        token: foundToken, 
+        token: foundToken,
       };
     } else {
       return {
@@ -41,15 +40,31 @@ export const validateToken = async tokenToValidate => {
   }
 };
 
-
-export const fetchStockOrders = async(req,res) =>{
+export const fetchStockOrders = async (req, res) => {
   try {
-
     const orderList = await SupplierToken.find({}).populate("supplier");
     res.status(200).json({ orders: orderList });
-    
   } catch (error) {
-    res.status(500).json({message: "Internal server error"});
-    
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+
+export const updateTokenStatus = async (tokenId, newStatus) => {
+  try {
+    const updatedToken = await SupplierToken.findOneAndUpdate(
+      {token: tokenId},
+      {
+        status: newStatus,
+      },
+      { new: true }
+    );
+
+    if (updatedToken) {
+      return { message: "Token status updated successfully" };
+    } else {
+      return { message: "Error updating status " };
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" + error.message });
+  }
+};

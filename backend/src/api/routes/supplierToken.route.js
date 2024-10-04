@@ -3,12 +3,29 @@ import {
   addSupplierToken,
   validateToken,
   fetchStockOrders,
+  updateTokenStatus,
 } from "../controllers/supplierToken.controller";
 
 const router = express.Router();
 
 router.post("/add-supplier-token", addSupplierToken);
 router.get("/fetch-stock-orders", fetchStockOrders);
+router.patch("/update-token-status/:tokenId", async (req, res) => {
+  try {
+    const token = req.params.tokenId;
+    const { status } = req.body;
+
+    const result = await updateTokenStatus(token, status);
+    res.status(200).json({ message: result });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+
+
+});
+
+
+
 router.get("/validate-token/:token", async (req, res) => {
   const tokenToValidate = req.params.token;
 
