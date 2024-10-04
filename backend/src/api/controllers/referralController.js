@@ -2,21 +2,17 @@
 
 const Referral = require("../models/referral");
 const Loyalty = require("../models/loyalty");
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 const crypto = require("crypto");
-import dotenv from "dotenv";
-
-dotenv.config();
-
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
-  port: 587 ,
-  secure: false,
+  //port: 587 ,
+  //secure: false,
   auth: {
     user: process.env.USER,
-    pass:process.env.APP_PASSWORD,
+    pass: process.env.APP_PASSWORD,
   },
 });
 
