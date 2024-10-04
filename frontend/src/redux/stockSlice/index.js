@@ -14,7 +14,7 @@ export const addNewStock = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const result = await axios.post(
-        "http://localhost:3000/api/stock/add-stock",
+        `${import.meta.env.VITE_API_URL}stock/add-stock`,
         formData,
         {
           headers: {
@@ -35,7 +35,7 @@ export const fetchAllStock = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const result = await axios.get(
-        "http://localhost:3000/api/stock/fetch-stock"
+        `${import.meta.env.VITE_API_URL}stock/fetch-stock`
       );
       return result?.data;
     } catch (error) {
@@ -50,7 +50,7 @@ export const fetchLowStock = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const result = await axios.get(
-        "http://localhost:3000/api/stock/fetch-low"
+        `${import.meta.env.VITE_API_URL}stock/fetch-low`
       );
       return result?.data;
     } catch (error) {
@@ -67,7 +67,7 @@ export const deleteStock = createAsyncThunk(
   async (stockId, { rejectWithValue }) => {
     try {
       await axios.delete(
-        `http://localhost:3000/api/stock/delete-stock/${stockId}`
+        `${import.meta.env.VITE_API_URL}stock/delete-stock/${stockId}`
       );
       return stockId; // Return the stock ID that was deleted
     } catch (error) {

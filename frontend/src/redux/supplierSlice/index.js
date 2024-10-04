@@ -10,7 +10,7 @@ export const fetchAllSuppliers = createAsyncThunk(
   "adminSupplier/fetchAllSuppliers",
   async () => {
     const result = await axios.get(
-      "http://localhost:3000/api/supplier/get-supplier"
+      `${import.meta.env.VITE_API_URL}supplier/get-supplier`
     );
     console.log("API Response:", result.data); // Log API response for debugging
     return result.data.stocks; // Adjust based on actual API response
