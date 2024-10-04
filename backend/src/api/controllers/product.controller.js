@@ -4,54 +4,57 @@ import { Buffer } from "buffer";
 import Product from "../models/product.model";
 
 const productController = {
-
-  async getFilteredProducts (req, res) {
+  async getFilteredProducts(req, res) {
     try {
-      const { category = [], brand = [], sortBy = "price-lowtohigh" } = req.query;
-  
+      const {
+        category = [],
+        brand = [],
+        sortBy = "price-lowtohigh",
+      } = req.query;
+
       let filters = {};
-  
+
       if (category.length) {
         filters.category = { $in: category.split(",") };
       }
-  
+
       if (brand.length) {
         filters.brand = { $in: brand.split(",") };
       }
-  
+
       let sort = {};
-  
+
       switch (sortBy) {
         case "price-lowtohigh":
           sort.price = 1;
-  
+
           break;
         case "price-hightolow":
           sort.price = -1;
-  
+
           break;
         case "title-atoz":
           sort.title = 1;
-  
+
           break;
-  
+
         case "title-ztoa":
           sort.title = -1;
-  
+
           break;
-  
+
         default:
           sort.price = 1;
           break;
       }
-  
+
       const products = await Product.find(filters).sort(sort);
-  
+
       res.status(200).json({
         success: true,
         data: products,
       });
-    } catch (e) {
+    } catch (error) {
       console.log(error);
       res.status(500).json({
         success: false,
@@ -175,13 +178,13 @@ const productController = {
           .status(404)
           .json({ success: false, message: "Product not found" });
       }
-      product.image=image || product.image;
+      product.image = image || product.image;
       product.title = title || product.title;
       product.description = description || product.description;
       product.category = category || product.category;
       product.brand = brand || product.brand;
-      product.price = price === "" ? 0 :price || product.price;
-      product.salePrice = salePrice === "" ? 0 :salePrice || product.salePrice;
+      product.price = price === "" ? 0 : price || product.price;
+      product.salePrice = salePrice === "" ? 0 : salePrice || product.salePrice;
       product.totalStock = totalStock || product.totalStock;
 
       await product.save();
@@ -204,13 +207,13 @@ const productController = {
     try {
       const { id } = req.params;
       const product = await Product.findByIdAndDelete(id);
-  
+
       if (!product)
         return res.status(404).json({
           success: false,
           message: "Product not found",
         });
-  
+
       res.status(200).json({
         success: true,
         message: "Product delete successfully",
