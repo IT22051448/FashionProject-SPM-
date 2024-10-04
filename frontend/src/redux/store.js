@@ -9,6 +9,10 @@ import promoReducer from "./loyaltySlice/promoSlice";
 import storage from "redux-persist/lib/storage";
 
 import { persistReducer } from "redux-persist";
+import adminStockSlice from "./stockSlice";
+import supplierSlice from "./supplierSlice";
+import mailslice from "./mailSlice/mailSlice";
+import tokenReducer from "./supplierToken/supplierTokenSlice"; 
 import persistStore from "redux-persist/es/persistStore";
 
 const persistConfig = {
@@ -20,6 +24,10 @@ const persistConfig = {
 
 const reducer = combineReducers({
   auth: authReducer,
+  stock: adminStockSlice,
+  supplier: supplierSlice,
+  email: mailslice,
+  token: tokenReducer, 
   product: productReducer,
   cart: cartReducer,
   order: orderReducer,
@@ -36,7 +44,6 @@ const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     }),
-
   devTools: true,
 });
 

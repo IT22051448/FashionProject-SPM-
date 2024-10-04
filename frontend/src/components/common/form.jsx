@@ -2,7 +2,6 @@
 import PropTypes from "prop-types";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-
 import {
   Select,
   SelectTrigger,
@@ -25,6 +24,7 @@ const CommonForm = ({
   setFormData,
   onSubmit,
   buttonText,
+  supplierOptions,
 }) => {
   function renderInput(control) {
     let element = null;
@@ -46,6 +46,9 @@ const CommonForm = ({
         break;
 
       case types.SELECT:
+        // Determine options based on the field
+        const options =
+          control.name === "supplier" ? supplierOptions : control.options;
         element = (
           <Select
             onValueChange={(value) =>
@@ -60,9 +63,9 @@ const CommonForm = ({
               <SelectValue placeholder={control.label} />
             </SelectTrigger>
             <SelectContent>
-              {control.options && control.options.length > 0
-                ? control.options.map((option, index) => (
-                    <SelectItem key={index} value={option.id}>
+              {options && options.length > 0
+                ? options.map((option, index) => (
+                    <SelectItem key={index} value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))
@@ -102,6 +105,11 @@ const CommonForm = ({
 
 CommonForm.propTypes = {
   formControls: PropTypes.array.isRequired,
+  formData: PropTypes.object.isRequired,
+  setFormData: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  buttonText: PropTypes.string,
+  supplierOptions: PropTypes.array,
 };
 
 export default CommonForm;
