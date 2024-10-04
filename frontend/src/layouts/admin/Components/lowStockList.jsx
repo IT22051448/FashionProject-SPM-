@@ -39,6 +39,7 @@ function LowStockList() {
 
   useEffect(() => {
     dispatch(fetchAllSuppliers());
+    dispatch(fetchLowStock());
   }, [dispatch]);
 
   const {
@@ -53,10 +54,6 @@ function LowStockList() {
         label: supplier.name,
       }))
     : [];
-
-  useEffect(() => {
-    dispatch(fetchLowStock());
-  }, [dispatch]);
 
   const { lowStockList } = useSelector((state) => state.stock);
   const {
@@ -77,7 +74,9 @@ function LowStockList() {
     setOpenOrderDialog(true);
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = (event) => {
+    event.preventDefault(); // Prevent default form submission
+
     const selectedSupplier = supplierList.find(
       (supplier) => supplier.email === formData.supplier
     );
@@ -88,18 +87,27 @@ function LowStockList() {
     }
 
     const orderData = {
-      email: formData.supplier, 
+      email: formData.supplier,
       itemCode: selectedStockItem.itemId,
       qnt: formData.quantity,
       date: formData.reorderDate,
     };
 
     // Dispatch the sendEmail action
-    dispatch(sendEmail(orderData)).then(() => {
-      toast({
-        title: "Order placed successfully",
+    dispatch(sendEmail(orderData))
+      .then(() => {
+        toast({
+          title: "Order placed successfully",
+        });
+        setOpenOrderDialog(false);
+      })
+      .catch((error) => {
+        toast({
+          title: "Order placement failed",
+          description: error.message,
+          variant: "destructive",
+        });
       });
-    });
   };
 
   return (
@@ -135,16 +143,16 @@ function LowStockList() {
                 buttonText="Place Order"
                 formControls={reorderFormControls}
                 supplierOptions={supplierOptions}
-                onSubmit={handlePlaceOrder}
+                onSubmit={handlePlaceOrder} // Pass the event to handlePlaceOrder
               />
             </div>
-
-            {emailError && <p className="text-red-600">{emailError}</p>}
           </SheetContent>
         </Sheet>
       </Fragment>
 
-      <h2 className="text-lg font-semibold mb-4 text-center">Low Stock Items</h2>
+      <h2 className="text-lg font-semibold mb-4 text-center">
+        Low Stock Items
+      </h2>
 
       <Table>
         <TableHeader>

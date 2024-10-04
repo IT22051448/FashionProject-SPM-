@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   validateToken,
   updateTokenStatus,
+  fetchStockOrders, // Import fetchStockOrders
 } from "@/redux/supplierToken/supplierTokenSlice";
 import { Separator } from "@/components/ui/separator";
 
@@ -42,15 +43,16 @@ const SupplierConfirmation = () => {
 
   const handleAccept = async () => {
     try {
-      const result = await dispatch(
+      await dispatch(
         updateTokenStatus({ tokenId, status: "ACCEPTED" })
       ).unwrap();
-      setIsDisabled(true); 
+      setIsDisabled(true);
       toast({
         title: "Order Accepted",
       });
 
-      console.log("Token status updated successfully.", result);
+      // Refresh stock orders
+      dispatch(fetchStockOrders()); // Add this line
     } catch (error) {
       console.error("Failed to update token status:", error);
       alert("Failed to update token status.");
@@ -59,15 +61,16 @@ const SupplierConfirmation = () => {
 
   const handleDeny = async () => {
     try {
-      const result = await dispatch(
+      await dispatch(
         updateTokenStatus({ tokenId, status: "DECLINED" })
       ).unwrap();
-      setIsDisabled(true); 
+      setIsDisabled(true);
       toast({
         title: "Order Declined",
       });
 
-      console.log("Token status updated successfully.", result);
+      // Refresh stock orders
+      dispatch(fetchStockOrders()); // Add this line
     } catch (error) {
       console.error("Failed to update token status:", error);
       alert("Failed to update token status.");
@@ -131,7 +134,7 @@ const SupplierConfirmation = () => {
           <Button
             onClick={handleAccept}
             className="w-80 hover:bg-green-700"
-            disabled={isDisabled ? true : false}
+            disabled={isDisabled}
           >
             Accept
           </Button>
@@ -139,7 +142,7 @@ const SupplierConfirmation = () => {
           <Button
             onClick={handleDeny}
             className="w-80 bg-slate-500 hover:bg-red-700"
-            disabled={isDisabled ? true : false}
+            disabled={isDisabled}
           >
             Deny
           </Button>
