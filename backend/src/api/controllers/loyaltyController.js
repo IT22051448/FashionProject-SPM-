@@ -3,15 +3,15 @@ const PromoCode = require("../models/loyaltyPromos");
 
 // Helper function to determine tier based on loyalty points
 function determineTier(loyaltyPoints) {
-  if (loyaltyPoints >= 0 && loyaltyPoints <= 299) {
+  if (loyaltyPoints >= 0 && loyaltyPoints <= 199) {
     return "Grey";
-  } else if (loyaltyPoints >= 300 && loyaltyPoints <= 599) {
+  } else if (loyaltyPoints >= 200 && loyaltyPoints <= 499) {
     return "Bronze";
-  } else if (loyaltyPoints >= 600 && loyaltyPoints <= 1199) {
+  } else if (loyaltyPoints >= 500 && loyaltyPoints <= 999) {
     return "Silver";
-  } else if (loyaltyPoints >= 1200 && loyaltyPoints <= 3599) {
+  } else if (loyaltyPoints >= 1000 && loyaltyPoints <= 1999) {
     return "Gold";
-  } else if (loyaltyPoints >= 3600) {
+  } else if (loyaltyPoints >= 2000) {
     return "Platinum";
   }
 }
@@ -34,6 +34,52 @@ exports.getAllCustomers = async (req, res) => {
     res.json(customers);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+
+// Update customer details by email
+exports.updateCustomer = async (req, res) => {
+  const { email } = req.params;
+  const updateFields = req.body;
+
+  try {
+    // Find the customer by email
+    const existingCustomer = await Loyalty.findOne({ email });
+
+    if (!existingCustomer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Update only the fields provided in the request
+    Object.keys(updateFields).forEach(key => {
+      if (updateFields[key] !== undefined) {
+        existingCustomer[key] = updateFields[key];
+      }
+    });
+
+    // Save the updated customer
+    const updatedCustomer = await existingCustomer.save();
+
+    res.status(200).json(updatedCustomer);
+  } catch (error) {
+    console.error("Error updating customer:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Delete customer by email
+exports.deleteCustomerByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const result = await Loyalty.findOneAndDelete({ email });
+
+    if (!result) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.status(200).json({ message: "Customer deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -268,5 +314,88 @@ exports.updatePromoCodeById = async (req, res) => {
     res.json(updatedPromoCode);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.applyPromoCode = async (req, res) => {
+  const { code } = req.body;
+
+  try {
+    // Find the promo code in the database
+    const promo = await PromoCode.findOne({ code });
+
+    // If no promo code found
+    if (!promo) {
+      return res.status(400).json({ error: "Invalid promo code" });
+    }
+
+    // Check if the promo code is expired
+    if (promo.expiresAt && new Date() > new Date(promo.expiresAt)) {
+      return res.status(400).json({ error: "Promo code has expired" });
+    }
+
+    // Return the discount percentage or amount
+    res.json({
+      discountPercentage: promo.discountPercentage,
+      discountAmount: promo.discountAmount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.updateCustomerTier = async (req, res) => {
+  const { email } = req.params;
+  const { tier } = req.body;
+
+  try {
+    // Find the customer by email
+    const customer = await Loyalty.findOne({ email });
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    // Update the tier
+    customer.tier = tier;
+    await customer.save();
+
+    res.json(customer);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Route to generate report
+exports.generateReport = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    // Create a query object based on the start and end dates if provided
+    let query = {};
+    if (startDate && endDate) {
+      query = {
+        joinDate: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      };
+    }
+
+    // Query the database for loyalty data within the specified range
+    const loyaltyData = await Loyalty.find(query);
+
+    // Map the data to fit the report's needs
+    const reportData = loyaltyData.map(item => ({
+      customerName: item.name,
+      loyaltyPoints: item.loyaltyPoints,
+      status: item.status, // Assuming 'status' is part of your schema
+    }));
+
+    // Send the response back to the client
+    res.status(200).json(reportData);
+  } catch (error) {
+    console.error("Error generating report:", error);
+    res.status(500).json({ message: "Error generating report" });
   }
 };

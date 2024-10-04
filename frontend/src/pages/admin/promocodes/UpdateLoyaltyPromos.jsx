@@ -1,26 +1,35 @@
 // src/components/UpdateLoyaltyPromos.js
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPromoCodeById,
   updatePromoCode,
-} from "@/redux/loyaltySlice/promoSlice"; // Adjust the import path
+} from "@/redux/loyaltySlice/promoSlice";
 import { promoFormControls } from "@/config/promoFormConfig";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
 
 const UpdateLoyaltyPromos = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { promoCode, loading, error } = useSelector((state) => state.promo);
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
+    watch,
+    clearErrors,
   } = useForm();
+
+  const [discountError, setDiscountError] = useState("");
+
+  const discountAmount = watch("discountAmount");
+  const discountPercentage = watch("discountPercentage");
 
   useEffect(() => {
     dispatch(fetchPromoCodeById(id));
@@ -48,7 +57,24 @@ const UpdateLoyaltyPromos = () => {
     }
   }, [promoCode, setValue]);
 
+  const validateFields = () => {
+    if (!discountAmount && !discountPercentage) {
+      setDiscountError(
+        "Either discount amount or percentage must be provided."
+      );
+      return false;
+    }
+    if (discountAmount && discountPercentage) {
+      setDiscountError("You cannot input both discount amount and percentage.");
+      return false;
+    }
+    setDiscountError("");
+    return true;
+  };
+
   const onSubmit = (data) => {
+    if (!validateFields()) return;
+
     const promoData = {
       ...data,
       startDate: data.startDate ? new Date(data.startDate) : null,
@@ -64,11 +90,19 @@ const UpdateLoyaltyPromos = () => {
     dispatch(updatePromoCode({ id, promoData }))
       .unwrap()
       .then(() => {
-        alert("Promo code updated successfully!");
+        toast({
+          title: "Success!",
+          description: "Promo code updated successfully.",
+          variant: "success",
+        });
         navigate("/admin/view-promos");
       })
       .catch(() => {
-        alert("Error updating promo code. Please try again.");
+        toast({
+          title: "Error",
+          description: "Failed to update promo code. Please try again.",
+          variant: "error",
+        });
       });
   };
 
@@ -99,6 +133,24 @@ const UpdateLoyaltyPromos = () => {
                 className={`w-full px-3 py-2 border rounded ${
                   errors[control.name] ? "border-red-500" : ""
                 }`}
+                readOnly={
+                  (control.name === "discountAmount" && discountPercentage) ||
+                  (control.name === "discountPercentage" && discountAmount)
+                }
+                onClick={() => {
+                  if (control.name === "discountAmount" && discountPercentage) {
+                    setDiscountError(
+                      "You cannot input a discount amount since percentage is already provided."
+                    );
+                  } else if (
+                    control.name === "discountPercentage" &&
+                    discountAmount
+                  ) {
+                    setDiscountError(
+                      "You cannot input a discount percentage since amount is already provided."
+                    );
+                  }
+                }}
               />
             )}
             {control.componentType === "select" && (
@@ -120,6 +172,10 @@ const UpdateLoyaltyPromos = () => {
             )}
           </div>
         ))}
+        {discountError && (
+          <p className="text-red-500 text-sm mb-4">{discountError}</p>
+        )}
+
         <div className="flex justify-between mt-6">
           <button
             type="submit"

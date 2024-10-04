@@ -8,7 +8,11 @@ const PromoCodes = ({ validPromoCodes, applyPromoCode, formatDate }) => (
         {validPromoCodes.map((promo) => (
           <div
             key={promo._id}
-            className="bg-white p-4 rounded-lg shadow-lg border border-gray-200"
+            className={`p-4 rounded-lg shadow-lg border ${
+              promo.tier === "Diamond"
+                ? "bg-purple-300 border-purple-500 text-white"
+                : "bg-white border-gray-200"
+            }`}
           >
             <h3 className="text-xl font-semibold mb-2">{promo.code}</h3>
             <p className="text-lg">{promo.description}</p>

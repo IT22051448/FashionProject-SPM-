@@ -10,6 +10,7 @@ const initialState = {
   loading: false,
   error: null,
   referralStatus: null,
+  pointsAdded: false,
 };
 
 // Async thunk to create a new loyalty customer
@@ -18,7 +19,7 @@ export const createLoyaltyCustomer = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/loyalty/create-customer",
+        `${import.meta.env.VITE_API_URL}loyalty/create-customer`,
         formData
       );
       return response.data;
@@ -34,7 +35,7 @@ export const checkLoyaltyCustomer = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/loyalty/check-customer",
+        "http://localhost:5000/api/loyalty/check-customer",
         { email }
       );
       return response.data.exists;
@@ -50,7 +51,7 @@ export const referAFriend = createAsyncThunk(
   async ({ referrerEmail, referredEmail }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/referral/refer",
+        "http://localhost:5000/api/referral/refer",
         { referrerEmail, referredEmail }
       );
       return response.data;
@@ -66,11 +67,27 @@ export const fetchCustomerDetails = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/loyalty/customer/${email}`
+        `http://localhost:5000/api/loyalty/customer/${email}`
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Thunk for updating customer details
+export const updateCustomerDetails = createAsyncThunk(
+  "loyalty/updateCustomerDetails",
+  async ({ email, updates }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}loyalty/update-customer/${email}`,
+        updates
+      );
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
     }
   }
 );
@@ -81,7 +98,7 @@ export const fetchPromoCodes = createAsyncThunk(
   async (tier, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/loyalty/promo-codes/${tier}`
+        `http://localhost:5000/api/loyalty/promo-codes/${tier}`
       );
       return response.data;
     } catch (error) {
@@ -90,11 +107,40 @@ export const fetchPromoCodes = createAsyncThunk(
   }
 );
 
+// Async thunk for updating customer tier
+export const updateCustomerTier = createAsyncThunk(
+  "loyalty/updateCustomerTier",
+  async ({ email, newTier }, thunkAPI) => {
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_URL}loyalty/${email}/tier`,
+        {
+          tier: newTier,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Loyalty slice definition
 const loyaltySlice = createSlice({
   name: "loyalty",
-  initialState,
-  reducers: {},
+  initialState: {
+    points: 0,
+    tier: "",
+  },
+
+  reducers: {
+    updateLoyaltyPointsSuccess(state) {
+      state.pointsAdded = true;
+    },
+    resetPointsAdded(state) {
+      state.pointsAdded = false;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createLoyaltyCustomer.pending, (state) => {
@@ -160,8 +206,75 @@ const loyaltySlice = createSlice({
       .addCase(fetchPromoCodes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
+      })
+      .addCase(updateLoyaltyPoints.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customer = action.payload;
+        state.points = action.payload.points;
+        state.tier = action.payload.tier;
+      })
+      .addCase(updateLoyaltyPoints.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(updateCustomerDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCustomerDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customer = action.payload;
+      })
+      .addCase(updateCustomerDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchAllCustomers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllCustomers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customers = action.payload;
+      })
+      .addCase(fetchAllCustomers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(deleteCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customers = state.customers.filter(
+          (customer) => customer.email !== action.payload.email
+        );
+      })
+      .addCase(deleteCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(updateCustomerTier.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateCustomerTier.fulfilled, (state, action) => {
+        state.loading = false;
+        const updatedCustomer = action.payload;
+        const index = state.customers.findIndex(
+          (customer) => customer.email === updatedCustomer.email
+        );
+        if (index !== -1) {
+          state.customers[index] = updatedCustomer;
+        }
+      })
+      .addCase(updateCustomerTier.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
+export const { updateLoyaltyPointsSuccess, resetPointsAdded } =
+  loyaltySlice.actions;
 export default loyaltySlice.reducer;

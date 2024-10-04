@@ -7,6 +7,7 @@ import {
   Warehouse,
   ChevronDown,
   Stamp,
+  UserRoundCheck,
 } from "lucide-react";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -63,6 +64,13 @@ export const adminSideBarMenuItems = [
     label: "Promo Codes",
     path: "/admin/promocodes",
     icon: <Stamp />,
+  },
+
+  {
+    id: "loyaltymembers",
+    label: "Loyalty Members",
+    path: "/admin/view-members",
+    icon: <UserRoundCheck />,
   },
 ];
 

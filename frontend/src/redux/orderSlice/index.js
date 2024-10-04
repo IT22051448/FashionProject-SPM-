@@ -15,7 +15,7 @@ export const cancelPayment = createAsyncThunk(
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}order/cancel-payment`,
+      `${import.meta.env.VITE_API_URL}orders/cancel-payment`,
       { orderId },
       {
         headers: {

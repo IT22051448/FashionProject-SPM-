@@ -13,6 +13,7 @@ import {
 import AdminOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteOrder,
   generateInvoice,
   getAllOrders,
   getOrder,
@@ -39,7 +40,7 @@ function AdminOrdersView() {
     dispatch(generateInvoice(id));
   }
 
-  function deleteOrder(id) {
+  function handleDeleteOrder(id) {
     dispatch(deleteOrder(id)).then((data) => {
       if (data?.payload?.success) {
         dispatch(getAllOrders());
@@ -122,7 +123,7 @@ function AdminOrdersView() {
                         <Button
                           variant="destructive"
                           onClick={() => {
-                            deleteOrder(orderItem?._id);
+                            handleDeleteOrder(orderItem?._id);
                           }}
                         >
                           Delete

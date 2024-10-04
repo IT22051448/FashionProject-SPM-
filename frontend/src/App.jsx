@@ -24,6 +24,10 @@ import LoyaltyMember from "./pages/customer/loyalty/LoyaltyMember";
 import LoyaltyPromos from "./pages/admin/promocodes/LoyaltyPromos";
 import ViewLoyaltyPromos from "./pages/admin/promocodes/ViewLoyaltyPromos";
 import UpdateLoyaltyPromos from "./pages/admin/promocodes/UpdateLoyaltyPromos";
+import UpdateLoyaltyMember from "./pages/customer/loyalty/UpdateLoyaltyMember";
+import ViewLoyaltyMembers from "./pages/admin/loyaltymembers/loyaltymembers";
+import AdminUpdateLoyaltyMember from "./pages/admin/loyaltymembers/editmemberdetails";
+import GenerateLMReport from "./pages/admin/loyaltymembers/loyaltyReport";
 
 // Import ToastContainer from react-toastify
 import { ToastContainer } from "react-toastify";
@@ -67,7 +71,16 @@ function App() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="promocodes" element={<LoyaltyPromos />} />
           <Route path="view-promos" element={<ViewLoyaltyPromos />} />
+          <Route path="view-members" element={<ViewLoyaltyMembers />} />
           <Route path="update-promos/:id" element={<UpdateLoyaltyPromos />} />
+          <Route
+            path="loyalty/generate-report"
+            element={<GenerateLMReport />}
+          />
+          <Route
+            path="edit-customer/:email"
+            element={<AdminUpdateLoyaltyMember />}
+          />
           <Route path="inventory" element={<Admininventory />} />
         
         </Route>
@@ -87,6 +100,10 @@ function App() {
           <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
           <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
           <Route path="LoyaltyMember" element={<LoyaltyMember />} />
+          <Route
+            path="update-member/:email"
+            element={<UpdateLoyaltyMember />}
+          />
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="profile" element={<Profile />} />

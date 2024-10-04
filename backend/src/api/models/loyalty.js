@@ -10,9 +10,10 @@ const LoyaltySchema = new mongoose.Schema({
   newMember: { type: Boolean, default: true },
   tier: {
     type: String,
-    enum: ["Grey", "Bronze", "Silver", "Gold", "Platinum"],
+    enum: ["Grey", "Bronze", "Silver", "Gold", "Platinum", "Diamond"],
     default: "Grey",
   },
+  referredcount: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("Loyalty", LoyaltySchema);
