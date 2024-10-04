@@ -6,8 +6,11 @@ const initialState = {
   token: null,
   isLoading: false,
   error: null,
+  message: null, // For success messages
+  stockOrders: [], // Added to hold fetched stock orders
 };
 
+// Async thunk for validating a token
 export const validateToken = createAsyncThunk(
   "token/validateToken",
   async (token, { rejectWithValue }) => {
@@ -22,6 +25,7 @@ export const validateToken = createAsyncThunk(
   }
 );
 
+// Async thunk for fetching stock orders
 export const fetchStockOrders = createAsyncThunk(
   "adminStock/fetchStockOrders",
   async () => {
@@ -31,6 +35,23 @@ export const fetchStockOrders = createAsyncThunk(
     return result?.data;
   }
 );
+
+// Async thunk for updating token status
+export const updateTokenStatus = createAsyncThunk(
+  "token/updateTokenStatus",
+  async ({ tokenId, status }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3000/api/supplierToken/update-token-status/${tokenId}`,
+        { status }
+      );
+      return response.data; // Return the success message
+    } catch (error) {
+      return rejectWithValue(error.response.data); // Return error message
+    }
+  }
+);
+
 // Create the token slice
 const tokenSlice = createSlice({
   name: "token",
@@ -45,6 +66,7 @@ const tokenSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Handle validateToken
       .addCase(validateToken.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -57,6 +79,8 @@ const tokenSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+
+      // Handle fetchStockOrders
       .addCase(fetchStockOrders.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -68,9 +92,24 @@ const tokenSlice = createSlice({
       .addCase(fetchStockOrders.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+
+      // Handle updateTokenStatus
+      .addCase(updateTokenStatus.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateTokenStatus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.message = action.payload.message; // Store the success message
+      })
+      .addCase(updateTokenStatus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
+
 // Export actions and reducer
 export const { setToken, clearToken } = tokenSlice.actions;
 export default tokenSlice.reducer;

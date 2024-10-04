@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { validateToken } from "@/redux/supplierToken/supplierTokenSlice";
+import { useToast } from "@/hooks/use-toast";
+import {
+  validateToken,
+  updateTokenStatus,
+} from "@/redux/supplierToken/supplierTokenSlice";
 import { Separator } from "@/components/ui/separator";
 
 import {
@@ -19,6 +23,9 @@ const SupplierConfirmation = () => {
   const dispatch = useDispatch();
   const [tokenData, setTokenData] = useState(null);
   const [error, setError] = useState(null);
+  const [isDisabled, setIsDisabled] = useState(false); // State to manage button disabled status
+
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkToken = async () => {
@@ -33,16 +40,38 @@ const SupplierConfirmation = () => {
     checkToken();
   }, [tokenId, dispatch]);
 
-  const handleAccept = () => {
-    // Logic for accepting the supply
-    console.log("Supply accepted");
-    // Add your acceptance handling here (e.g., make API call)
+  const handleAccept = async () => {
+    try {
+      const result = await dispatch(
+        updateTokenStatus({ tokenId, status: "ACCEPTED" })
+      ).unwrap();
+      setIsDisabled(true); 
+      toast({
+        title: "Order Accepted",
+      });
+
+      console.log("Token status updated successfully.", result);
+    } catch (error) {
+      console.error("Failed to update token status:", error);
+      alert("Failed to update token status.");
+    }
   };
 
-  const handleDeny = () => {
-    // Logic for denying the supply
-    console.log("Supply denied");
-    // Add your denial handling here (e.g., make API call)
+  const handleDeny = async () => {
+    try {
+      const result = await dispatch(
+        updateTokenStatus({ tokenId, status: "DECLINED" })
+      ).unwrap();
+      setIsDisabled(true); 
+      toast({
+        title: "Order Declined",
+      });
+
+      console.log("Token status updated successfully.", result);
+    } catch (error) {
+      console.error("Failed to update token status:", error);
+      alert("Failed to update token status.");
+    }
   };
 
   return (
@@ -99,19 +128,24 @@ const SupplierConfirmation = () => {
 
       {tokenData && (
         <div className="flex justify-center mt-10 space-x-4">
-          <Button onClick={handleAccept} className="w-80 hover:bg-green-700">
+          <Button
+            onClick={handleAccept}
+            className="w-80 hover:bg-green-700"
+            disabled={isDisabled ? true : false}
+          >
             Accept
           </Button>
 
           <Button
             onClick={handleDeny}
             className="w-80 bg-slate-500 hover:bg-red-700"
+            disabled={isDisabled ? true : false}
           >
             Deny
           </Button>
         </div>
       )}
-      <Separator className='mt-9' />
+      <Separator className="mt-9" />
       {tokenData && (
         <p className="text-center text-lg mt-6">
           Thank you for your trust and partnership. We truly value your support.
