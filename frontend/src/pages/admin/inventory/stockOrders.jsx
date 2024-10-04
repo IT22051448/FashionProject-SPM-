@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from "react";
 import { fetchStockOrders } from "@/redux/supplierToken/supplierTokenSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -12,32 +12,23 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 function stockOrders() {
-
   const dispatch = useDispatch();
 
-  const { stockOrders } = useSelector((state) => state.token);
+  const { stockOrders = [] } = useSelector((state) => state.token); 
 
   useEffect(() => {
     dispatch(fetchStockOrders());
   }, [dispatch]);
 
-  if(stockOrders) {
-    console.log(" ok");
-    
+  if (stockOrders.length > 0) {
+    console.log("Stock orders fetched successfully");
+  } else {
+    console.log("No stock orders found");
   }
-  else{
-    console.log("stock order error");
-    
-  }
-
-
-
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4 text-center">
-        Stock Orders
-      </h2>
+      <h2 className="text-lg font-semibold mb-4 text-center">Stock Orders</h2>
 
       <Table>
         <TableHeader>
@@ -75,7 +66,7 @@ function stockOrders() {
           ) : (
             <TableRow>
               <TableCell colSpan={7} className="text-center">
-                No low stock items found.
+                No stock orders found.
               </TableCell>
             </TableRow>
           )}

@@ -2,17 +2,21 @@
 
 const Referral = require("../models/referral");
 const Loyalty = require("../models/loyalty");
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 const crypto = require("crypto");
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  host: "smtp.gmail.com",
+  //host: "smtp.gmail.com",
   //port: 587 ,
-  //secure: false,
+  secure: false,
   auth: {
     user: process.env.USER,
-    pass: process.env.APP_PASSWORD,
+    pass:process.env.APP_PASSWORD,
   },
 });
 
@@ -47,7 +51,7 @@ exports.createReferral = async (req, res) => {
     const referralLink = `http://localhost:5173/auth/signup?referralToken=${referralToken}`;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      
       to: referredEmail,
       subject: `You’ve been referred to join our loyalty program!`,
       text: `Hello,

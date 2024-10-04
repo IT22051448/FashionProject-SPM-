@@ -10,12 +10,20 @@ dotenv.config();
 export const sendEmail = async (email, itemId, qnt, date) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    //port: 587,
+    //secure: false,
     auth: {
-      user: process.env.Email,
-      pass: process.env.appPass,
+      user:'christyspam1@gmail.com',
+      pass:'zfou yuze obtg xadb',
     },
+  });
+
+  transporter.verify(function (error, success) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Server is ready to take messages");
+    }
   });
 
   const mailGenerator = new Mailgen({
@@ -59,7 +67,7 @@ export const sendEmail = async (email, itemId, qnt, date) => {
   const emailBody = mailGenerator.generate(emailContent);
 
   const mailOptions = {
-    from: process.env.Email,
+    from: process.env.USER,
     to: email,
     subject: "New Stock Order",
     html: emailBody,
