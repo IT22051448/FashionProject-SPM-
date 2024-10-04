@@ -24,7 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import CommonForm from "@/components/common/form";
-import { sendEmail } from "@/redux/mailSlice/mailSlice";
+
 import { reorderFormControls } from "@/config";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -38,57 +38,38 @@ import { fetchAllSuppliers } from "@/redux/supplierSlice";
 function AdminStockList() {
   const dispatch = useDispatch();
   const [selectedStock, setSelectedStock] = useState(null);
-  const [openOrderDialog, setOpenOrderDialog] = useState(false);
-  const [formData, setFormData] = useState({ supplier: "", quantity: 0 });
-  const [supplierList, setSupplierList] = useState([]);
 
   const { toast } = useToast();
 
   useEffect(() => {
     dispatch(fetchAllStock());
-    dispatch(fetchAllSuppliers()).then((response) => {
-      if (response.meta.requestStatus === "fulfilled") {
-        setSupplierList(response.payload);
-      }
-    });
+    dispatch(fetchAllSuppliers());
   }, [dispatch]);
 
   const { stockList } = useSelector((state) => state.stock);
   const stockArray = stockList?.stocks || [];
 
   const handleDelete = (id) => {
-    dispatch(deleteStock(id));
-    setSelectedStock(null);
-    window.location.reload();
-  };
-
-  const handleOpenOrderDialog = (stockItem) => {
-    setSelectedStock(stockItem);
-    setFormData({
-      supplier: "",
-      quantity: stockItem.totalStock,
-    });
-    setOpenOrderDialog(true);
-  };
-
-  const handlePlaceOrder = () => {
-    const orderData = {
-      email: formData.supplier,
-      itemCode: selectedStock.itemId,
-      qnt: formData.quantity,
-      date: new Date().toISOString(),
-    };
-
-    dispatch(sendEmail(orderData)).then(() => {
-      toast({
-        title: "Order placed successfully",
-      });
-      setOpenOrderDialog(false);
+    dispatch(deleteStock(id)).then((response) => {
+      if (response.meta.requestStatus === "fulfilled") {
+        dispatch(fetchAllStock());
+        setSelectedStock(null); // Only reset after the deletion is complete
+        toast({
+          title: "Stock deleted successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to delete stock.",
+        });
+      }
     });
   };
 
   return (
     <div>
+      <h2 className="text-lg font-semibold mb-4 text-center">All Stocks</h2>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -153,7 +134,10 @@ function AdminStockList() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => handleDelete(selectedStock._id)}
+                          onClick={() => {
+                            handleDelete(selectedStock?._id);
+                            setSelectedStock(null); // Reset after delete action
+                          }}
                         >
                           Confirm
                         </AlertDialogAction>
@@ -161,7 +145,6 @@ function AdminStockList() {
                     </AlertDialogContent>
                   </AlertDialog>
                 </TableCell>
-               
               </TableRow>
             ))
           ) : (
@@ -173,42 +156,6 @@ function AdminStockList() {
           )}
         </TableBody>
       </Table>
-
-      {/* Order Sheet */}
-      <Sheet open={openOrderDialog} onOpenChange={setOpenOrderDialog}>
-        <SheetContent side="right" className="overflow-auto">
-          <SheetHeader>
-            <SheetTitle>Order Form</SheetTitle>
-            {selectedStock && (
-              <div>
-                <p className="text-sm text-gray-500 mt-2">
-                  Ordering for Item ID: <strong>{selectedStock.itemId}</strong>
-                </p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Item Name: <strong>{selectedStock.title}</strong>
-                </p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Current Stock: <strong>{selectedStock.totalStock}</strong>
-                </p>
-              </div>
-            )}
-          </SheetHeader>
-
-          <div className="py-6">
-            <CommonForm
-              formData={formData}
-              setFormData={setFormData}
-              buttonText="Place Order"
-              formControls={reorderFormControls}
-              supplierOptions={supplierList.map((supplier) => ({
-                value: supplier.email,
-                label: supplier.name,
-              }))}
-              onSubmit={handlePlaceOrder}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }

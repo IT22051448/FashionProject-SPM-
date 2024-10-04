@@ -139,11 +139,12 @@ function LowStockList() {
               />
             </div>
 
-            
             {emailError && <p className="text-red-600">{emailError}</p>}
           </SheetContent>
         </Sheet>
       </Fragment>
+
+      <h2 className="text-lg font-semibold mb-4 text-center">Low Stock Items</h2>
 
       <Table>
         <TableHeader>

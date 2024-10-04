@@ -35,6 +35,10 @@ function stockOrders() {
 
   return (
     <div>
+      <h2 className="text-lg font-semibold mb-4 text-center">
+        Stock Orders
+      </h2>
+
       <Table>
         <TableHeader>
           <TableRow>
