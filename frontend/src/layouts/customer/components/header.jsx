@@ -1,13 +1,29 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { checkLoyaltyCustomer } from "../../../redux/loyaltySlice/loyaltySlice";
+import { Menu, Shirt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Shirt } from "lucide-react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import MenuItems from "./menuItem";
 import HeaderRightContent from "./headerRightContent";
 
 const ShoppingHeader = () => {
+  const dispatch = useDispatch();
+
+  const isLoyaltyCustomer = useSelector(
+    (state) => state.loyalty.isLoyaltyCustomer
+  );
+
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const userEmail = useSelector((state) => state.auth.user?.email);
+
+  React.useEffect(() => {
+    if (userEmail) {
+      dispatch(checkLoyaltyCustomer(userEmail));
+    }
+  }, [userEmail, dispatch]);
+
   return (
     <header className="sticky top-0 z-40 w-full border bg-background">
       <div className="flex h-16 items-center justify-between px-4 md:px-6">
@@ -15,6 +31,15 @@ const ShoppingHeader = () => {
           <Shirt className="h-6 w-6" />
           <span className="font-bold">Fashion House</span>
         </Link>
+        {isLoyaltyCustomer ? (
+          <Link to="/shop/loyaltyMember" className="hover:underline">
+            Loyalty Profile
+          </Link>
+        ) : (
+          <Link to="/shop/loyaltySignUp" className="hover:underline">
+            Become a Loyalty Member
+          </Link>
+        )}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">
@@ -23,11 +48,11 @@ const ShoppingHeader = () => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-full max-w-xs">
-            <MenuItems />
+            <MenuItems isLoyaltyCustomer={isLoyaltyCustomer} />
           </SheetContent>
         </Sheet>
         <div className="hidden lg:block">
-          <MenuItems />
+          <MenuItems isLoyaltyCustomer={isLoyaltyCustomer} />
         </div>
         {isAuthenticated ? (
           <div>

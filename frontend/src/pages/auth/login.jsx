@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { loginFormControls } from "@/config";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { loginUser } from "@/redux/authSlice";
+import { loginUser, clearNotifications } from "@/redux/authSlice";
+import { toast } from "react-toastify";
 
 const initialState = {
   username: "",
@@ -19,9 +20,38 @@ const AuthLogin = () => {
     event.preventDefault();
     console.log(formData);
 
-    dispatch(loginUser(formData)).then((data) => {
-      console.log(data);
-    });
+    dispatch(loginUser(formData))
+      .then((result) => {
+        if (result.type === "auth/login/fulfilled") {
+          const userData = result.payload.user;
+          if (
+            userData &&
+            userData.notifications &&
+            userData.notifications.length > 0
+          ) {
+            userData.notifications.forEach((notification) => {
+              toast.info(notification); // Show toast notification
+            });
+
+            // Clear notifications from backend
+            if (userData.email) {
+              dispatch(clearNotifications(userData.email))
+                .then((clearResult) => {
+                  clearResult.type === "auth/clearNotifications/fulfilled";
+                })
+                .catch(() => {
+                  toast.error("Failed to clear notifications");
+                });
+            }
+          }
+        } else {
+          // Handle login errors if any
+          toast.error("Login failed");
+        }
+      })
+      .catch(() => {
+        toast.error("Login failed");
+      });
   }
 
   return (

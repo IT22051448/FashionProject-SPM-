@@ -8,7 +8,7 @@ const connect = () => {
   const MONGODB_URL = config.DB_CONNECTION_STRING;
 
   if (database) return;
-  
+
   mongoose
     .connect(MONGODB_URL)
     .then(connection => {

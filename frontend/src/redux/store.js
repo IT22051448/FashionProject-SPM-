@@ -4,6 +4,8 @@ import productReducer from "./productSlice";
 import cartReducer from "./cartSlice";
 import orderReducer from "./orderSlice";
 import address from "./addressSlice";
+import loyaltyReducer from "./loyaltySlice/loyaltySlice";
+import promoReducer from "./loyaltySlice/promoSlice";
 import storage from "redux-persist/lib/storage";
 
 import { persistReducer } from "redux-persist";
@@ -17,6 +19,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
+  blacklist: ["product"],
 };
 
 const reducer = combineReducers({
@@ -29,6 +32,8 @@ const reducer = combineReducers({
   cart: cartReducer,
   order: orderReducer,
   address: address,
+  loyalty: loyaltyReducer,
+  promo: promoReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);

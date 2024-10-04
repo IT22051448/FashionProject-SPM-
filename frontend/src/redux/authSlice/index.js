@@ -34,6 +34,23 @@ export const loginUser = createAsyncThunk("auth/login", async (formData) => {
   return response.data;
 });
 
+export const clearNotifications = createAsyncThunk(
+  "auth/clearNotifications",
+  async (email, { rejectWithValue }) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/users/clear-notifications",
+        { email },
+        {
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -80,6 +97,14 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.error = action.error.message;
+      })
+      .addCase(clearNotifications.fulfilled, (state) => {
+        if (state.user) {
+          state.user.notifications = []; // Clear notifications in Redux state after backend success
+        }
+      })
+      .addCase(clearNotifications.rejected, (state, action) => {
+        toast.error(action.payload || "Failed to clear notifications"); // Show error message if clearing fails
       });
   },
 });

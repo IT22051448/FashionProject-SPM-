@@ -13,6 +13,8 @@ import supTokenRouter from "./api/routes/supplierToken.route";
 import productRouter from "./api/routes/product.route";
 import cartRouter from "./api/routes/cart.route";
 import addressRouter from "./api/routes/address.route";
+import loyaltyRoutes from "./api/routes/loyaltyRoutes";
+import referralRoutes from "./api/routes/referralRoutes";
 
 const PORT = process.env.PORT || 3000;
 
@@ -34,15 +36,12 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
-app.use("/api/orders", orderRouter);
-app.use("/api/stock", stockRouter);
-app.use("/api/sendmail", mailRouter);
-app.use("/api/supplier", supplierRouter);
-app.use("/api/supplierToken", supTokenRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
+app.use("/api/loyalty", loyaltyRoutes);
+app.use("/api/referral", referralRoutes);
 
 app.listen(PORT, () => {
   logger.info(`Server is running on port: ${PORT}`);

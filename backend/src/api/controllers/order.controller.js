@@ -3,6 +3,9 @@ import logger from "../../utils/logger";
 import Product from "../models/product.model";
 import Cart from "../models/cart.model";
 import paypal from "../../utils/paypal";
+import ExcelJs from "exceljs";
+import easyinvoice from "easyinvoice";
+import { Buffer } from "buffer";
 
 const orderController = {
   async createOrder(req, res) {
@@ -142,7 +145,7 @@ const orderController = {
       res.status(200).json({
         success: true,
         message: "Order confirmed",
-        data: order,
+        order: order,
       });
     } catch (e) {
       console.log(e);
@@ -176,6 +179,20 @@ const orderController = {
         success: false,
         message: "Internal Server Error",
       });
+    }
+  },
+
+  async deleteOrder(req, res) {
+    try {
+      await Order.findByIdAndDelete(req.params.id);
+      res
+        .status(200)
+        .json({ success: true, message: "Order deleted successfully" });
+    } catch (error) {
+      logger.error(error.message);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
     }
   },
 
@@ -218,13 +235,107 @@ const orderController = {
     }
   },
 
-  async deleteOrder(req, res) {
+  async generateOrderReport(req, res) {
     try {
-      await Order.findByIdAndDelete(req.params.id);
-      res.status(200).json({ message: "Order deleted successfully" });
+      const workbook = new ExcelJs.Workbook();
+      const orders = await Order.find();
+
+      if (orders.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No orders found",
+        });
+      }
+
+      const sheet = workbook.addWorksheet("Orders");
+
+      sheet.columns = [
+        { header: "Order Number", key: "orderNumber", width: 20 },
+        { header: "User ID", key: "userId", width: 25 },
+        { header: "Total Amount", key: "totalAmount", width: 15 },
+        { header: "Order Date", key: "orderDate", width: 20 },
+        { header: "Order Status", key: "orderStatus", width: 20 },
+        { header: "Payment Status", key: "paymentStatus", width: 20 },
+        { header: "Address", key: "addressInfo", width: 30 },
+      ];
+
+      // Add rows with data from orders
+      orders.forEach(order => {
+        sheet.addRow({
+          orderNumber: order.orderNumber,
+          userId: order.userId,
+          totalAmount: order.totalAmount,
+          orderDate: order.orderDate,
+          orderStatus: order.orderStatus,
+          paymentStatus: order.paymentStatus,
+          addressInfo: `${order.addressInfo.address}, ${order.addressInfo.city}, ${order.addressInfo.pincode}`,
+        });
+      });
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="orders_report.xlsx"'
+      );
+
+      await workbook.xlsx.write(res);
+      res.status(200).end();
     } catch (error) {
-      logger.error(error.message);
-      res.status(500).json({ message: "Internal Server Error" });
+      console.error("Error generating order report:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate order report",
+      });
+    }
+  },
+
+  async generateInvoice(req, res) {
+    try {
+      const orderId = req.params.id;
+      const order = await Order.findById(orderId);
+      const invoiceData = {
+        documentTitle: "ORDER REPORT",
+        currency: "USD",
+        mode: "development",
+        marginTop: 25,
+        marginRight: 25,
+        marginLeft: 25,
+        marginBottom: 25,
+        logo: "https://public.easyinvoice.cloud/img/logo_en_original.png",
+        sender: {
+          company: "Fashion",
+          address: "Your Address",
+          zip: "12345",
+          city: "Your City",
+        },
+        client: {
+          address: order.addressInfo.address,
+          zip: order.addressInfo.pincode,
+          city: order.addressInfo.city,
+        },
+        invoiceNumber: "2021.0001",
+        invoiceDate: new Date().toLocaleDateString(),
+        products: order.cartItems?.map(product => ({
+          quantity: product.quantity,
+          description: product.title,
+          price: product.price,
+        })),
+        bottomNotice: "Thank you for your business.",
+      };
+
+      const result = await easyinvoice.createInvoice(invoiceData);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+      res.send(Buffer.from(result.pdf, "base64"));
+    } catch (error) {
+      logger.error("Error generating invoice:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to generate invoice",
+      });
     }
   },
 };

@@ -1,11 +1,12 @@
 import { useState } from "react";
+
 import {
   LayoutDashboard,
   Shirt,
   PackageOpen,
   Warehouse,
   ChevronDown,
-  icons,
+  Stamp,
 } from "lucide-react";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -55,6 +56,13 @@ export const adminSideBarMenuItems = [
         path: "/admin/inventory?tab=analytics",
       },
     ],
+  },
+
+  {
+    id: "promocodes",
+    label: "Promo Codes",
+    path: "/admin/promocodes",
+    icon: <Stamp />,
   },
 ];
 

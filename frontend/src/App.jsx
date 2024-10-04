@@ -17,8 +17,18 @@ import { useSelector } from "react-redux";
 import ShoppingCheckout from "./pages/customer/checkout/checkout";
 import SupplierConfirmation from "./pages/supplier-access/SupplierConfimation";
 import ShoppingListing from "./pages/customer/listing/listing";
+
+import LoyaltySignUp from "./pages/customer/loyalty/LoyaltyCustomers";
+import LoyaltyReferral from "./pages/customer/loyalty/LoyaltyFriendReferal";
+import LoyaltyMember from "./pages/customer/loyalty/LoyaltyMember";
+import LoyaltyPromos from "./pages/admin/promocodes/LoyaltyPromos";
+import ViewLoyaltyPromos from "./pages/admin/promocodes/ViewLoyaltyPromos";
+import UpdateLoyaltyPromos from "./pages/admin/promocodes/UpdateLoyaltyPromos";
+
+// Import ToastContainer from react-toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import PayPalReturn from "./pages/customer/paypal-return/paypal-return";
-import OrderSuccess from "./pages/customer/order-success/order-success";
 import PayPalCancel from "./pages/customer/paypal-cancel/paypal-cancel";
 
 function App() {
@@ -28,6 +38,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<CheckAuth />} />
 
@@ -54,6 +65,9 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="promocodes" element={<LoyaltyPromos />} />
+          <Route path="view-promos" element={<ViewLoyaltyPromos />} />
+          <Route path="update-promos/:id" element={<UpdateLoyaltyPromos />} />
           <Route path="inventory" element={<Admininventory />} />
         
         </Route>
@@ -70,8 +84,13 @@ function App() {
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
+          <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
+          <Route path="LoyaltyMember" element={<LoyaltyMember />} />
+          <Route path="listing" element={<ShoppingListing />} />
+          <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="paypal-return" element={<PayPalReturn />} />
-          <Route path="order-success" element={<OrderSuccess />} />
           <Route path="paypal-cancel" element={<PayPalCancel />} />
         </Route>
         <Route path="*" element={<NotFound />} />
