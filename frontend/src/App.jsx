@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./layouts/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthSignup from "./pages/auth/signup";
@@ -15,9 +15,6 @@ import CheckAuth from "./components/common/check-auth";
 import { useSelector } from "react-redux";
 import ShoppingCheckout from "./pages/customer/checkout/checkout";
 import ShoppingListing from "./pages/customer/listing/listing";
-import PayPalReturn from "./pages/customer/paypal-return/paypal-return";
-import OrderSuccess from "./pages/customer/order-success/order-success";
-import PayPalCancel from "./pages/customer/paypal-cancel/paypal-cancel";
 
 import LoyaltySignUp from "./pages/customer/loyalty/LoyaltyCustomers";
 import LoyaltyReferral from "./pages/customer/loyalty/LoyaltyFriendReferal";
@@ -33,6 +30,8 @@ import GenerateLMReport from "./pages/admin/loyaltymembers/loyaltyReport";
 // Import ToastContainer from react-toastify
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PayPalReturn from "./pages/customer/paypal-return/paypal-return";
+import PayPalCancel from "./pages/customer/paypal-cancel/paypal-cancel";
 
 function App() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -44,6 +43,7 @@ function App() {
       <ToastContainer />
       <Routes>
         <Route path="/" element={<CheckAuth />} />
+
         <Route
           path="/auth"
           element={
@@ -91,6 +91,8 @@ function App() {
         >
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
+          <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="loyaltySignUp" element={<LoyaltySignUp />} />
           <Route path="LoyaltyReferral" element={<LoyaltyReferral />} />
           <Route path="LoyaltyMember" element={<LoyaltyMember />} />
@@ -98,10 +100,10 @@ function App() {
             path="update-member/:email"
             element={<UpdateLoyaltyMember />}
           />
+          <Route path="listing" element={<ShoppingListing />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="profile" element={<Profile />} />
           <Route path="paypal-return" element={<PayPalReturn />} />
-          <Route path="order-success" element={<OrderSuccess />} />
           <Route path="paypal-cancel" element={<PayPalCancel />} />
         </Route>
         <Route path="*" element={<NotFound />} />

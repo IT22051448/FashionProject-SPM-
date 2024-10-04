@@ -14,20 +14,28 @@ const authMiddleware = roles => {
     const token = authorization.split(" ")[1];
 
     try {
-      // handle an instance where jwt is expired
+      // how to identify expired token
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const _id = decoded._id;
+      jwt.verify(token, process.env.JWT_SECRET, async function (err, decoded) {
+        if (err) {
+          logger.error(`Token Expired: ${err.message}`);
+          return res
+            .status(401)
+            .json({ success: false, message: "Token Expired" });
+        }
 
-      const role = decoded.role;
+        const _id = decoded._id;
 
-      if (!roles.includes(role)) {
-        return res.status(403).json({ success: false, message: "Forbidden" });
-      }
+        const role = decoded.role;
 
-      const user = await User.findOne({ _id });
-      req.user = user;
-      next();
+        if (!roles.includes(role)) {
+          return res.status(403).json({ success: false, message: "Forbidden" });
+        }
+
+        const user = await User.findOne({ _id });
+        req.user = user;
+        next();
+      });
     } catch (error) {
       logger.error(error.message);
       return res

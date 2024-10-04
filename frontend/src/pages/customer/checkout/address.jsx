@@ -108,7 +108,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
 
   useEffect(() => {
     dispatch(fetchAllAddresses(user?._id));
-  }, [dispatch]);
+  }, [dispatch, user?._id]);
 
   console.log(addressList, "addresses");
 

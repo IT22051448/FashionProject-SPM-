@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { checkLoyaltyCustomer } from "../../../redux/loyaltySlice/loyaltySlice";
 import { Menu, Shirt } from "lucide-react";
@@ -9,7 +9,6 @@ import MenuItems from "./menuItem";
 import HeaderRightContent from "./headerRightContent";
 
 const ShoppingHeader = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const isLoyaltyCustomer = useSelector(
@@ -32,6 +31,15 @@ const ShoppingHeader = () => {
           <Shirt className="h-6 w-6" />
           <span className="font-bold">Fashion House</span>
         </Link>
+        {isLoyaltyCustomer ? (
+          <Link to="/shop/loyaltyMember" className="hover:underline">
+            Loyalty Profile
+          </Link>
+        ) : (
+          <Link to="/shop/loyaltySignUp" className="hover:underline">
+            Become a Loyalty Member
+          </Link>
+        )}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">

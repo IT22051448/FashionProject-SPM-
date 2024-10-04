@@ -1,7 +1,15 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { capturePayment, resetApprovalURL, getOrder } from "@/redux/orderSlice";
 import { fetchCartItems } from "@/redux/cartSlice";
 import { updateLoyaltyPoints } from "@/redux/loyaltySlice/loyaltySlice";
+import { Label } from "@radix-ui/react-dropdown-menu";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +20,8 @@ const PayPalReturn = () => {
   const navigate = useNavigate();
   const { placedOrderId, orderDetails } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.auth);
+
+  const [order, setOrder] = useState(null);
   const { tier } = useSelector((state) => state.loyalty);
   const [previousTier, setPreviousTier] = useState(tier);
   const [pointsAdded, setPointsAdded] = useState(false); // Flag to prevent multiple updates
@@ -47,8 +57,9 @@ const PayPalReturn = () => {
       orderDetails
     ) {
       dispatch(capturePayment({ paymentId, payerId, orderId: placedOrderId }))
-        .then(() => {
+        .then((data) => {
           console.log("Payment captured successfully.");
+          setOrder(data.payload.order);
           dispatch(resetApprovalURL());
           dispatch(fetchCartItems(user?._id));
 
@@ -92,9 +103,6 @@ const PayPalReturn = () => {
                   variant: "success",
                 });
               }
-
-              // Navigate to order success page after points and tier update
-              navigate("/shop/order-success");
             })
             .catch((error) => {
               console.error("Failed to update loyalty points:", error);
@@ -118,18 +126,56 @@ const PayPalReturn = () => {
     orderDetails,
     dispatch,
     navigate,
-    user,
+    user?._id,
     pointsAdded,
     previousTier,
     toast, // For triggering notifications
   ]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Placed Order ID: {placedOrderId}</CardTitle>
-      </CardHeader>
-    </Card>
+    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+      <Card>
+        <CardHeader>
+          <CardTitle>Order created Successfully</CardTitle>
+          <CardDescription>
+            Thank you for your order. Your order has been placed successfully.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6">
+            <div className="grid gap-2">
+              <div className="flex mt-6 items-center justify-between">
+                <p className="font-medium">Order ID</p>
+                <Label>{order?._id}</Label>
+              </div>
+              <div className="flex mt-2 items-center justify-between">
+                <p className="font-medium">Order Date</p>
+                <Label>{order?.orderDate.split("T")[0]}</Label>
+              </div>
+              <div className="flex mt-2 items-center justify-between">
+                <p className="font-medium">Order Price</p>
+                <Label>${order?.totalAmount}</Label>
+              </div>
+              <div className="flex mt-2 items-center justify-between">
+                <p className="font-medium">Payment method</p>
+                <Label>{order?.paymentMethod}</Label>
+              </div>
+              <div className="flex mt-2 items-center justify-between">
+                <p className="font-medium">Payment Status</p>
+                <Label>{order?.paymentStatus}</Label>
+              </div>
+              <Button
+                onClick={() => {
+                  navigate("/shop/profile");
+                }}
+              >
+                View Orders
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
