@@ -182,6 +182,20 @@ const orderController = {
     }
   },
 
+  async deleteOrder(req, res) {
+    try {
+      await Order.findByIdAndDelete(req.params.id);
+      res
+        .status(200)
+        .json({ success: true, message: "Order deleted successfully" });
+    } catch (error) {
+      logger.error(error.message);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+
   async getOrders(req, res) {
     try {
       if (req.user.role === "admin") {
@@ -215,16 +229,6 @@ const orderController = {
         { new: true }
       );
       res.status(200).json(order);
-    } catch (error) {
-      logger.error(error.message);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
-  },
-
-  async deleteOrder(req, res) {
-    try {
-      await Order.findByIdAndDelete(req.params.id);
-      res.status(200).json({ message: "Order deleted successfully" });
     } catch (error) {
       logger.error(error.message);
       res.status(500).json({ message: "Internal Server Error" });
@@ -292,11 +296,10 @@ const orderController = {
     try {
       const orderId = req.params.id;
       const order = await Order.findById(orderId);
-
       const invoiceData = {
         documentTitle: "ORDER REPORT",
         currency: "USD",
-
+        mode: "development",
         marginTop: 25,
         marginRight: 25,
         marginLeft: 25,
@@ -328,7 +331,7 @@ const orderController = {
       res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
       res.send(Buffer.from(result.pdf, "base64"));
     } catch (error) {
-      logger.error("Error generating invoice:", error.message);
+      logger.error("Error generating invoice:", error);
       res.status(500).json({
         success: false,
         message: "Failed to generate invoice",

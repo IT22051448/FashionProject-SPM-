@@ -127,6 +127,24 @@ export const updateOrderStatus = createAsyncThunk(
   }
 );
 
+export const deleteOrder = createAsyncThunk(
+  "/order/deleteOrder",
+  async (id, { getState }) => {
+    const auth = getState().auth;
+    const token = auth.token;
+    const response = await axios.delete(
+      `${import.meta.env.VITE_API_URL}orders/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  }
+);
+
 export const getOrderReport = createAsyncThunk(
   "/order/getOrderReport",
   async (_, { getState }) => {

@@ -20,6 +20,7 @@ import {
   resetOrderDetails,
 } from "@/redux/orderSlice";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "react-toastify";
 
 function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
@@ -36,6 +37,16 @@ function AdminOrdersView() {
 
   function getInvoice(id) {
     dispatch(generateInvoice(id));
+  }
+
+  function deleteOrder(id) {
+    dispatch(deleteOrder(id)).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(getAllOrders());
+      } else {
+        toast.error;
+      }
+    });
   }
 
   useEffect(() => {
@@ -108,11 +119,21 @@ function AdminOrdersView() {
                     </TableCell>
                     <TableCell>
                       {orderItem?.orderStatus === "rejected" ? (
-                        <Button variant="destructive">Delete</Button>
+                        <Button
+                          variant="destructive"
+                          onClick={() => {
+                            deleteOrder(orderItem?._id);
+                          }}
+                        >
+                          Delete
+                        </Button>
                       ) : (
                         <Button
                           variant="outline"
-                          onClick={getInvoice(orderItem?._id)}
+                          onClick={() => {
+                            console.log(orderItem?._id);
+                            getInvoice(orderItem?._id);
+                          }}
                         >
                           Print Invoice
                         </Button>
