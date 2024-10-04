@@ -44,9 +44,9 @@ app.use("/api/loyalty", loyaltyRoutes);
 app.use("/api/referral", referralRoutes);
 
 app.use("/api/stock", stockRouter);
-app.use("/api/mail", mailRouter);
+app.use("/api/sendmail", mailRouter);
 app.use("/api/supplier", supplierRouter);
-app.use("/api/supplier-token", supTokenRouter);
+app.use("/api/supplierToken", supTokenRouter);
 
 app.listen(PORT, () => {
   logger.info(`Server is running on port: ${PORT}`);

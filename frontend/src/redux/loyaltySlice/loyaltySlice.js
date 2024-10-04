@@ -18,7 +18,7 @@ export const createLoyaltyCustomer = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/loyalty/create-customer",
+        "http://localhost:3000/api/loyalty/create-customer",
         formData
       );
       return response.data;
@@ -34,7 +34,7 @@ export const checkLoyaltyCustomer = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/loyalty/check-customer",
+        "http://localhost:3000/api/loyalty/check-customer",
         { email }
       );
       return response.data.exists;
@@ -50,7 +50,7 @@ export const referAFriend = createAsyncThunk(
   async ({ referrerEmail, referredEmail }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/referral/refer",
+        "http://localhost:3000/api/referral/refer",
         { referrerEmail, referredEmail }
       );
       return response.data;
@@ -66,7 +66,7 @@ export const fetchCustomerDetails = createAsyncThunk(
   async (email, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/loyalty/customer/${email}`
+        `http://localhost:3000/api/loyalty/customer/${email}`
       );
       return response.data;
     } catch (error) {
@@ -81,7 +81,7 @@ export const fetchPromoCodes = createAsyncThunk(
   async (tier, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/loyalty/promo-codes/${tier}`
+        `http://localhost:3000/api/loyalty/promo-codes/${tier}`
       );
       return response.data;
     } catch (error) {

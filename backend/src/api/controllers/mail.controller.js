@@ -8,17 +8,17 @@ import Supplier from "../models/supplier.model";
 dotenv.config();
 
 export const sendEmail = async (email, itemId, qnt, date) => {
-  const transporter = nodemailer.createTransport({
+  const transporter1 = nodemailer.createTransport({
     host: "smtp.gmail.com",
     //port: 587,
     //secure: false,
     auth: {
-      user:'christyspam1@gmail.com',
-      pass:'zfou yuze obtg xadb',
+      user: process.env.EMAIL,
+      pass: process.env.APP_PASS,
     },
   });
 
-  transporter.verify(function (error, success) {
+  transporter1.verify(function (error, success) {
     if (error) {
       console.log(error);
     } else {
@@ -74,7 +74,7 @@ export const sendEmail = async (email, itemId, qnt, date) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
+    const info = await transporter1.sendMail(mailOptions);
     console.log("Email sent:", info.response);
 
     const supplier = await Supplier.findOne({ email });
