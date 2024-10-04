@@ -16,7 +16,7 @@ export const validateToken = createAsyncThunk(
   async (token, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/supplierToken/validate-token/${token}`
+        `${import.meta.env.VITE_API_URL}supplierToken/validate-token/${token}`
       );
       return response.data; // Return valid token data
     } catch (error) {

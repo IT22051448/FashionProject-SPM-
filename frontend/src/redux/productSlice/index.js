@@ -64,7 +64,7 @@ export const getProduct = createAsyncThunk(
 
 export const updateProduct = createAsyncThunk(
   "/products/updateProduct",
-  async ( {id, formData},{ getState }) => {
+  async ({ id, formData }, { getState }) => {
     const auth = getState().auth;
     const token = auth.token;
     const response = await axios.put(
