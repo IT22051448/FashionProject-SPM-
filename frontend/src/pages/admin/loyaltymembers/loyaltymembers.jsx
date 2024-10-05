@@ -82,7 +82,7 @@ const LoyaltyMembers = () => {
     return <div>Error: {errorMessage}</div>;
   }
 
-  const sortedCustomers = [...customers].sort(
+  const sortedCustomers = [...customers]?.sort(
     (a, b) => b.loyaltyPoints - a.loyaltyPoints
   );
 
@@ -122,7 +122,7 @@ const LoyaltyMembers = () => {
           </tr>
         </thead>
         <tbody>
-          {sortedCustomers.map((customer) => (
+          {sortedCustomers?.map((customer) => (
             <tr key={customer.email} className="border-b">
               <td className="py-2 px-4">{customer.name}</td>
               <td className="py-2 px-4">{customer.email}</td>

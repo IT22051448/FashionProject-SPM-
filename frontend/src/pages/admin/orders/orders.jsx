@@ -22,6 +22,19 @@ import {
 } from "@/redux/orderSlice";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "react-toastify";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog";
 
 function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
@@ -86,11 +99,11 @@ function AdminOrdersView() {
                     <TableCell>
                       <Badge
                         className={`py-1 px-3 ${
-                          orderItem?.orderStatus === "confirmed"
+                          orderItem?.orderStatus === "delivered"
                             ? "bg-green-500"
                             : orderItem?.orderStatus === "rejected"
                             ? "bg-red-600"
-                            : orderItem?.orderStatus === "inProcess"
+                            : orderItem?.orderStatus === "confirmed"
                             ? "bg-yellow-600"
                             : "bg-black"
                         }`}
@@ -120,14 +133,36 @@ function AdminOrdersView() {
                     </TableCell>
                     <TableCell>
                       {orderItem?.orderStatus === "rejected" ? (
-                        <Button
-                          variant="destructive"
-                          onClick={() => {
-                            handleDeleteOrder(orderItem?._id);
-                          }}
-                        >
-                          Delete
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="destructive"
+                              onClick={() => console.log(orderItem?._id)}
+                            >
+                              Remove
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you sure you want to delete this order?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action will permanently remove the order.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => {
+                                  handleDeleteOrder(orderItem?._id);
+                                }}
+                              >
+                                Confirm
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       ) : (
                         <Button
                           variant="outline"

@@ -238,7 +238,7 @@ const orderController = {
   async generateOrderReport(req, res) {
     try {
       const workbook = new ExcelJs.Workbook();
-      const orders = await Order.find();
+      const orders = await Order.find().populate("userId");
 
       if (orders.length === 0) {
         return res.status(404).json({
@@ -251,7 +251,7 @@ const orderController = {
 
       sheet.columns = [
         { header: "Order Number", key: "orderNumber", width: 20 },
-        { header: "User ID", key: "userId", width: 25 },
+        { header: "Customer", key: "customer", width: 25 },
         { header: "Total Amount", key: "totalAmount", width: 15 },
         { header: "Order Date", key: "orderDate", width: 20 },
         { header: "Order Status", key: "orderStatus", width: 20 },
@@ -263,7 +263,7 @@ const orderController = {
       orders.forEach(order => {
         sheet.addRow({
           orderNumber: order.orderNumber,
-          userId: order.userId,
+          customer: order.userId.firstname,
           totalAmount: order.totalAmount,
           orderDate: order.orderDate,
           orderStatus: order.orderStatus,
@@ -304,12 +304,12 @@ const orderController = {
         marginRight: 25,
         marginLeft: 25,
         marginBottom: 25,
-        logo: "https://public.easyinvoice.cloud/img/logo_en_original.png",
+        logo: "https://i.pinimg.com/564x/24/a9/30/24a930f0a1f6a8826e82965848e1299a.jpg",
         sender: {
           company: "Fashion",
-          address: "Your Address",
+          address: "Yorkshire Stree",
           zip: "12345",
-          city: "Your City",
+          city: "West London",
         },
         client: {
           address: order.addressInfo.address,
