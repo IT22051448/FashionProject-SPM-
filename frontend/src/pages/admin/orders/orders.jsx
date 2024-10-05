@@ -104,7 +104,9 @@ function AdminOrdersView() {
                             : orderItem?.orderStatus === "rejected"
                             ? "bg-red-600"
                             : orderItem?.orderStatus === "confirmed"
-                            ? "bg-yellow-600"
+                            ? "bg-yellow-400"
+                            : orderItem?.orderStatus === "pending"
+                            ? "bg-blue-900"
                             : "bg-black"
                         }`}
                       >

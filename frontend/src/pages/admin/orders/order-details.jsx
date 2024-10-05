@@ -68,10 +68,14 @@ function AdminOrderDetailsView({ orderDetails }) {
             <Label>
               <Badge
                 className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
+                  orderDetails?.orderStatus === "delivered"
                     ? "bg-green-500"
                     : orderDetails?.orderStatus === "rejected"
                     ? "bg-red-600"
+                    : orderDetails?.orderStatus === "confirmed"
+                    ? "bg-yellow-400"
+                    : orderDetails?.orderStatus === "pending"
+                    ? "bg-blue-900"
                     : "bg-black"
                 }`}
               >
