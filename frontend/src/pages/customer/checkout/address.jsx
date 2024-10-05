@@ -32,6 +32,20 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   function handleManageAddress(event) {
     event.preventDefault();
 
+    const { notes, ...requiredFormData } = formData;
+
+    // add validation to check if the forms address details are empty
+    const isFormDataEmpty = Object.values(requiredFormData).some(
+      (value) => !value.trim()
+    );
+    if (isFormDataEmpty) {
+      toast({
+        title: "Please fill in all address details",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (addressList.length >= 3 && currentEditedId === null) {
       setFormData(initialAddressFormData);
       toast({

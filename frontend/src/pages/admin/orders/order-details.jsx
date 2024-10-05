@@ -23,7 +23,16 @@ function AdminOrderDetailsView({ orderDetails }) {
 
   function handleUpdateStatus(event) {
     event.preventDefault();
+
     const { status } = formData;
+    console.log(status);
+    if (status === "") {
+      toast({
+        variant: "destructive",
+        title: "Please select an order status",
+      });
+      return;
+    }
 
     dispatch(
       updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
@@ -33,7 +42,7 @@ function AdminOrderDetailsView({ orderDetails }) {
         dispatch(getAllOrders());
         setFormData(initialFormData);
         toast({
-          title: "Task status updated",
+          title: "Order status updated",
         });
       }
     });
