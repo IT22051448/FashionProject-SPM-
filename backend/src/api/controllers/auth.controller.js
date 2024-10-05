@@ -6,6 +6,7 @@ import genAuthToken from "../../utils/genAuthToken.js";
 import { emailOrUsername } from "../../utils/helpers.js";
 import Referral from "../models/referral";
 import Loyalty from "../models/loyalty";
+import { determineTier } from "../controllers/loyaltyController.js";
 
 const authController = {
   async register(req, res) {
@@ -187,6 +188,17 @@ const processReferral = async (referralToken, referredEmail) => {
 
           // Increment the referred count by 1
           loyalty.referredcount += 1;
+
+          // Determine new tier based on updated loyalty points
+          const newTier = determineTier(loyalty.loyaltyPoints);
+          // Update the tier if it has changed
+          if (loyalty.tier !== newTier) {
+            loyalty.tier = newTier;
+            // Add a notification for tier change
+            referrer.notifications.push(
+              `Congratulations! You have been promoted to ${newTier} tier!`
+            );
+          }
 
           await loyalty.save();
 

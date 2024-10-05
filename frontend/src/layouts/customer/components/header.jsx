@@ -31,15 +31,7 @@ const ShoppingHeader = () => {
           <Shirt className="h-6 w-6" />
           <span className="font-bold">Fashion House</span>
         </Link>
-        {isLoyaltyCustomer ? (
-          <Link to="/shop/loyaltyMember" className="hover:underline">
-            Loyalty Profile
-          </Link>
-        ) : (
-          <Link to="/shop/loyaltySignUp" className="hover:underline">
-            Become a Loyalty Member
-          </Link>
-        )}
+
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">

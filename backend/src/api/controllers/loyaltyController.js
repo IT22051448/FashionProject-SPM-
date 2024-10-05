@@ -1,18 +1,19 @@
 const Loyalty = require("../models/loyalty");
 const PromoCode = require("../models/loyaltyPromos");
 
-// Helper function to determine tier based on loyalty points
-function determineTier(loyaltyPoints) {
-  if (loyaltyPoints >= 0 && loyaltyPoints <= 199) {
-    return "Grey";
-  } else if (loyaltyPoints >= 200 && loyaltyPoints <= 499) {
-    return "Bronze";
-  } else if (loyaltyPoints >= 500 && loyaltyPoints <= 999) {
-    return "Silver";
-  } else if (loyaltyPoints >= 1000 && loyaltyPoints <= 1999) {
-    return "Gold";
+function determineTier(loyaltyPoints, currentTier) {
+  if (currentTier === "Diamond") {
+    return "Diamond"; // Keep Diamond tier if already in it
   } else if (loyaltyPoints >= 2000) {
-    return "Platinum";
+    return "Platinum"; // Promote to Platinum but not Diamond
+  } else if (loyaltyPoints >= 1000) {
+    return "Gold";
+  } else if (loyaltyPoints >= 500) {
+    return "Silver";
+  } else if (loyaltyPoints >= 200) {
+    return "Bronze";
+  } else {
+    return "Grey";
   }
 }
 
@@ -89,6 +90,7 @@ exports.updateLoyaltyPoints = async (req, res) => {
     console.log("Request received:");
     console.log("Email:", req.params.email);
     console.log("Points:", req.body.points);
+    console.log("updateLoyaltyPoints called");
 
     const { points } = req.body;
     const customer = await Loyalty.findOneAndUpdate(
@@ -102,11 +104,11 @@ exports.updateLoyaltyPoints = async (req, res) => {
       return res.status(403).json({ error: "Customer not found" });
     }
 
-    // Determine new tier based on updated loyalty points
-    const newTier = determineTier(customer.loyaltyPoints);
+    // Determine new tier based on updated loyalty points and current tier
+    const newTier = determineTier(customer.loyaltyPoints, customer.tier);
 
-    // Update the tier if it has changed
-    if (customer.tier !== newTier) {
+    // Prevent downgrading if the customer is in the Diamond tier
+    if (customer.tier !== "Diamond" && customer.tier !== newTier) {
       customer.tier = newTier;
       await customer.save();
     }
@@ -399,3 +401,5 @@ exports.generateReport = async (req, res) => {
     res.status(500).json({ message: "Error generating report" });
   }
 };
+
+module.exports.determineTier = determineTier;

@@ -4,6 +4,7 @@ import CommonForm from "@/components/common/form";
 import { resigterFormControls } from "@/config";
 import { useDispatch } from "react-redux";
 import { registerUser } from "@/redux/authSlice";
+import { useToast, toast } from "@/hooks/use-toast";
 
 const initialState = {
   username: "",
@@ -18,12 +19,20 @@ const AuthSignup = () => {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   function onSubmit(event) {
     event.preventDefault();
     console.log(formData);
     dispatch(registerUser(formData)).then((data) => {
-      if (data?.payload?.success) navigate("/shop/home");
+      if (data?.payload?.success) {
+        toast({
+          title: "Sign Up Successful",
+          description: "Welcome to the platform!",
+          duration: 3000,
+        });
+        navigate("/shop/home");
+      }
     });
   }
 

@@ -13,6 +13,7 @@ export const loyaltyFormControls = [
     componentType: "input",
     type: "email",
     readOnly: true,
+    errorMessage: "Email address is not editable.",
   },
   {
     name: "phoneNumber",
@@ -35,5 +36,6 @@ export const loyaltyFormControls = [
     componentType: "input",
     type: "date",
     readOnly: true,
+    errorMessage: "Join date is not editable.",
   },
 ];
