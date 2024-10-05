@@ -10,11 +10,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button"; // Import Button component
+import { jsPDF } from "jspdf"; // Import jsPDF
+import "jspdf-autotable"; // Import jsPDF autotable plugin
 
-function stockOrders() {
+function StockOrders() {
   const dispatch = useDispatch();
 
-  const { stockOrders = [] } = useSelector((state) => state.token); 
+  const { stockOrders = [] } = useSelector((state) => state.token);
 
   useEffect(() => {
     dispatch(fetchStockOrders());
@@ -26,9 +29,40 @@ function stockOrders() {
     console.log("No stock orders found");
   }
 
+  // Function to download the stock orders as a PDF
+  const downloadPDF = () => {
+    const pdf = new jsPDF("l", "pt", "a4"); // Create a PDF document
+    const tableColumn = ["Item ID", "Quantity", "Supplier", "Status"]; // Define the table columns
+    const tableRows = []; // Initialize an array to hold table rows
+
+    // Populate table rows with stock orders data
+    stockOrders.forEach((order) => {
+      const orderData = [
+        order.itemId,
+        order.quantity,
+        order.supplier?.name || "N/A",
+        order.status,
+      ];
+      tableRows.push(orderData); // Add each stock order's data to the table rows
+    });
+
+    // Add the table to the PDF
+    pdf.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+    });
+
+    pdf.save("stock-orders.pdf"); // Save the PDF
+  };
+
   return (
     <div>
       <h2 className="text-lg font-semibold mb-4 text-center">Stock Orders</h2>
+
+      {/* Button to download stock orders as PDF */}
+      <Button className="bg-slate-900 hover:bg-blue-700" onClick={downloadPDF}>
+        Download Orders List
+      </Button>
 
       <Table>
         <TableHeader>
@@ -65,7 +99,7 @@ function stockOrders() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="text-center">
+              <TableCell colSpan={4} className="text-center">
                 No stock orders found.
               </TableCell>
             </TableRow>
@@ -76,4 +110,4 @@ function stockOrders() {
   );
 }
 
-export default stockOrders;
+export default StockOrders;

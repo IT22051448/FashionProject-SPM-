@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import { fetchAllStock, deleteStock } from "@/redux/stockSlice";
 import {
   Table,
@@ -23,27 +22,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import CommonForm from "@/components/common/form";
-
-import { reorderFormControls } from "@/config";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { fetchAllSuppliers } from "@/redux/supplierSlice";
+import { jsPDF } from "jspdf"; // Import jsPDF
+import "jspdf-autotable"; // Import jsPDF autotable plugin
 
 function AdminStockList() {
   const dispatch = useDispatch();
   const [selectedStock, setSelectedStock] = useState(null);
-
   const { toast } = useToast();
 
   useEffect(() => {
     dispatch(fetchAllStock());
-    dispatch(fetchAllSuppliers());
   }, [dispatch]);
 
   const { stockList } = useSelector((state) => state.stock);
@@ -53,7 +42,7 @@ function AdminStockList() {
     dispatch(deleteStock(id)).then((response) => {
       if (response.meta.requestStatus === "fulfilled") {
         dispatch(fetchAllStock());
-        setSelectedStock(null); // Only reset after the deletion is complete
+        setSelectedStock(null);
         toast({
           title: "Stock deleted successfully",
         });
@@ -66,9 +55,49 @@ function AdminStockList() {
     });
   };
 
+  const downloadPDF = () => {
+    const pdf = new jsPDF("l", "pt", "a4"); // Create a PDF document
+    const tableColumn = [
+      "Item ID",
+      "Title",
+      "Stock Description",
+      "Stock Price",
+      "Supplier",
+      "Stock Count",
+    ]; 
+    const tableRows = []; 
+
+    // Populate table rows with stock data
+    stockArray.forEach((stockItem) => {
+      const stockData = [
+        stockItem.itemId,
+        stockItem.title,
+        stockItem.description,
+        stockItem.price,
+        stockItem.supplier ? stockItem.supplier.name : "Unknown",
+        stockItem.totalStock,
+      ];
+      tableRows.push(stockData); 
+    });
+
+    // Add the table to the PDF
+    pdf.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+    });
+
+    pdf.save("stock-list.pdf"); // Save the PDF
+  };
+
   return (
     <div>
       <h2 className="text-lg font-semibold mb-4 text-center">All Stocks</h2>
+      <Button
+        className="bg-slate-900 hover:bg-blue-700"
+        onClick={downloadPDF} 
+      >
+        Download List
+      </Button>
 
       <Table>
         <TableHeader>
@@ -115,7 +144,7 @@ function AdminStockList() {
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
-                        className=" bg-slate-700 hover:bg-red-700"
+                        className="bg-slate-700 hover:bg-red-700"
                         onClick={() => setSelectedStock(stockItem)}
                       >
                         Remove
@@ -136,7 +165,7 @@ function AdminStockList() {
                         <AlertDialogAction
                           onClick={() => {
                             handleDelete(selectedStock?._id);
-                            setSelectedStock(null); // Reset after delete action
+                            setSelectedStock(null);
                           }}
                         >
                           Confirm

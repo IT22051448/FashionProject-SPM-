@@ -44,7 +44,7 @@ const PayPalReturn = () => {
           console.error("Failed to fetch order details:", error);
         });
     }
-  }, [placedOrderId, dispatch, orderFetched]);
+  }, [placedOrderId, dispatch, orderFetched, orderDetails]);
 
   // Handle payment and loyalty points logic
   useEffect(() => {
@@ -129,7 +129,8 @@ const PayPalReturn = () => {
     user?._id,
     pointsAdded,
     previousTier,
-    toast, // For triggering notifications
+    toast,
+    user.email, // For triggering notifications
   ]);
 
   return (

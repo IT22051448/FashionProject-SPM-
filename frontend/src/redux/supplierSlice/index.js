@@ -31,7 +31,7 @@ const supplierSlice = createSlice({
         state.supplierList = action.payload;
         console.log("Supplier List:", action.payload); // Log supplier list
       })
-      .addCase(fetchAllSuppliers.rejected, (state, action) => {
+      .addCase(fetchAllSuppliers.rejected, (state) => {
         state.isLoading = false;
         state.supplierList = [];
       });

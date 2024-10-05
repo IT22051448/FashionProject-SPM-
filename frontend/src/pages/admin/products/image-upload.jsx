@@ -10,14 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 const ProductImageUpload = ({
   imageFile,
   setImageFile,
-  setUploadImageUrl,
-  uploadImageUrl,
-  setImageLoadingState,
   imageLoadingState,
+  uploadImageUrl,
+  setUploadImageUrl,
+  setImageLoadingState,
+  isEditMode,
+  isCustomStyling = false,
 }) => {
   const inputRef = useRef(null);
 
   function handleImageFileChange(event) {
+    console.log(event.target.files, "event.target.files");
     const selectedFile = event.target.files?.[0];
 
     if (selectedFile) setImageFile(selectedFile);
@@ -75,7 +78,7 @@ const ProductImageUpload = ({
   }
 
   useEffect(() => {
-    if (imageFile) uploadToCloudinary();
+    if (imageFile !== null) uploadToCloudinary();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageFile]);
 
@@ -93,6 +96,7 @@ const ProductImageUpload = ({
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
+          
         />
         {!imageFile ? (
           <Label

@@ -3,7 +3,10 @@ import logger from "../../utils/logger";
 
 const OrderSchema = new mongoose.Schema({
   orderNumber: String,
-  userId: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   cartId: String,
   cartItems: [
     {
