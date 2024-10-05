@@ -33,6 +33,7 @@ function Stock() {
   const [openAddStockDialog, setOpenAddStockDialog] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [showLowStock, setShowLowStock] = useState(false);
+  const [addStockForm, setAddStockForm] = useState(addStockFormElements);
   const location = useLocation();
   const [tab, setTab] = useState("");
 
@@ -66,11 +67,13 @@ function Stock() {
 
   const supplierOptions = Array.isArray(supplierList)
     ? supplierList.map((supplier) => ({
-        value: supplier._id,
+        id: supplier._id,
         label: supplier.name,
       }))
     : [];
 
+  addStockFormElements[3].options = supplierOptions;
+  console.log("add stock", addStockFormElements[3]);
   const onSubmit = (event) => {
     event.preventDefault();
     dispatch(
@@ -115,7 +118,6 @@ function Stock() {
                 setFormData={setFormData}
                 buttonText="Add Stock"
                 formControls={addStockFormElements}
-                supplierOptions={supplierOptions}
               />
             </div>
           </SheetContent>
