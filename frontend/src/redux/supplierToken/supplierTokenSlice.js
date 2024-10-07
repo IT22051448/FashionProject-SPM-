@@ -30,7 +30,7 @@ export const fetchStockOrders = createAsyncThunk(
   "adminStock/fetchStockOrders",
   async () => {
     const result = await axios.get(
-      "http://localhost:3000/api/supplierToken/fetch-stock-orders"
+      `${import.meta.env.VITE_API_URL}supplierToken/fetch-stock-orders`
     );
     return result?.data;
   }
@@ -42,7 +42,9 @@ export const updateTokenStatus = createAsyncThunk(
   async ({ tokenId, status }, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3000/api/supplierToken/update-token-status/${tokenId}`,
+        `${
+          import.meta.env.VITE_API_URL
+        }supplierToken/update-token-status/${tokenId}`,
         { status }
       );
       return response.data; // Return the success message

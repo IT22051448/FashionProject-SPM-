@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { createLoyaltyCustomer } from "../../../redux/loyaltySlice/loyaltySlice";
 import { loyaltyFormControls } from "../../../config/loyaltyFormConfig";
+import { useToast } from "@/hooks/use-toast";
 
 const NewLoyaltyCustomerForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { toast } = useToast();
 
   // State hooks for form inputs
   const [formData, setFormData] = useState({
@@ -16,6 +18,8 @@ const NewLoyaltyCustomerForm = () => {
     dateOfBirth: "",
     joinDate: new Date().toISOString().split("T")[0],
   });
+
+  const [errorMessages, setErrorMessages] = useState({});
 
   // Access Email from Redux
   const userEmail = useSelector((state) => state.auth.user?.email);
@@ -32,10 +36,21 @@ const NewLoyaltyCustomerForm = () => {
     e.preventDefault();
     try {
       await dispatch(createLoyaltyCustomer(formData)).unwrap();
+      toast({
+        title: "Success",
+        description:
+          "Congratulations! you have successfully joined the Loyalty Program, please refresh the page",
+        type: "success",
+      });
       console.log("Customer added successfully");
       navigate("/shop/home");
     } catch (error) {
       console.error("There was an error adding the customer:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add customer.",
+        type: "error",
+      });
     }
   };
 
@@ -43,6 +58,17 @@ const NewLoyaltyCustomerForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrorMessages((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  // Handle focus on read-only fields to show error message
+  const handleFocus = (control) => {
+    if (control.readOnly && control.errorMessage) {
+      setErrorMessages((prev) => ({
+        ...prev,
+        [control.name]: control.errorMessage,
+      }));
+    }
   };
 
   return (
@@ -65,15 +91,23 @@ const NewLoyaltyCustomerForm = () => {
                         {control.label}
                       </label>
                       {control.componentType === "input" && (
-                        <input
-                          type={control.type}
-                          name={control.name}
-                          value={formData[control.name]}
-                          onChange={handleChange}
-                          placeholder={control.placeholder}
-                          readOnly={control.readOnly}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
-                        />
+                        <>
+                          <input
+                            type={control.type}
+                            name={control.name}
+                            value={formData[control.name]}
+                            onChange={handleChange}
+                            onFocus={() => handleFocus(control)}
+                            placeholder={control.placeholder}
+                            readOnly={control.readOnly}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2"
+                          />
+                          {errorMessages[control.name] && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errorMessages[control.name]}
+                            </p>
+                          )}
+                        </>
                       )}
                     </div>
                   ))}

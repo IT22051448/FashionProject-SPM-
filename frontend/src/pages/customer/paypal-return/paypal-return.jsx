@@ -20,13 +20,13 @@ const PayPalReturn = () => {
   const navigate = useNavigate();
   const { placedOrderId, orderDetails } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.auth);
+  const { tier } = useSelector((state) => state.loyalty);
+  const { toast } = useToast();
 
   const [order, setOrder] = useState(null);
-  const { tier } = useSelector((state) => state.loyalty);
-  const [previousTier, setPreviousTier] = useState(tier);
-  const [pointsAdded, setPointsAdded] = useState(false); // Flag to prevent multiple updates
+  const [pointsAdded, setPointsAdded] = useState(false);
   const [orderFetched, setOrderFetched] = useState(false);
-  const { toast } = useToast();
+  const [calculatedPoints, setCalculatedPoints] = useState(0);
 
   const params = new URLSearchParams(window.location.search);
   const paymentId = params.get("paymentId");
@@ -38,7 +38,7 @@ const PayPalReturn = () => {
       dispatch(getOrder(placedOrderId))
         .then(() => {
           console.log("Order details fetched:", orderDetails);
-          setOrderFetched(true); // Mark order as fetched
+          setOrderFetched(true);
         })
         .catch((error) => {
           console.error("Failed to fetch order details:", error);
@@ -46,16 +46,9 @@ const PayPalReturn = () => {
     }
   }, [placedOrderId, dispatch, orderFetched, orderDetails]);
 
-  // Handle payment and loyalty points logic
+  // Capture payment and calculate points
   useEffect(() => {
-    if (
-      paymentId &&
-      payerId &&
-      placedOrderId &&
-      orderFetched &&
-      !pointsAdded &&
-      orderDetails
-    ) {
+    if (paymentId && payerId && placedOrderId && orderFetched) {
       dispatch(capturePayment({ paymentId, payerId, orderId: placedOrderId }))
         .then((data) => {
           console.log("Payment captured successfully.");
@@ -65,7 +58,6 @@ const PayPalReturn = () => {
 
           const totalAmount = orderDetails.totalAmount;
           const points = Math.floor(totalAmount / 10);
-
           console.log("Calculated points:", points);
 
           if (isNaN(points) || points <= 0) {
@@ -74,44 +66,8 @@ const PayPalReturn = () => {
             return;
           }
 
-          // Update loyalty points
-          dispatch(updateLoyaltyPoints({ email: user.email, points }))
-            .then((action) => {
-              console.log("Loyalty points updated. Response:", action);
-              setPointsAdded(true); // Set flag to prevent further updates
-
-              // Show toast for points added
-              toast({
-                title: "Points Added!",
-                description: `${points} points have been added to your loyalty account.`,
-                variant: "success",
-              });
-
-              // Check for tier change and show promotion message if tier changes
-              if (
-                action.payload &&
-                action.payload.tier &&
-                action.payload.tier !== previousTier
-              ) {
-                // Update the previous tier
-                setPreviousTier(action.payload.tier);
-
-                // Show toast for tier promotion
-                toast({
-                  title: "Congratulations!",
-                  description: `You have been promoted to the ${action.payload.tier} tier!`,
-                  variant: "success",
-                });
-              }
-            })
-            .catch((error) => {
-              console.error("Failed to update loyalty points:", error);
-              toast({
-                title: "Error",
-                description: "Failed to update loyalty points.",
-                variant: "destructive",
-              });
-            });
+          // Store calculated points for the next useEffect
+          setCalculatedPoints(points);
         })
         .catch((error) => {
           console.error("Failed to capture payment:", error);
@@ -123,15 +79,52 @@ const PayPalReturn = () => {
     payerId,
     placedOrderId,
     orderFetched,
-    orderDetails,
     dispatch,
     navigate,
     user?._id,
-    pointsAdded,
-    previousTier,
-    toast,
-    user.email, // For triggering notifications
+    orderDetails,
   ]);
+
+  // Update loyalty points
+  useEffect(() => {
+    if (calculatedPoints > 0 && !pointsAdded) {
+      dispatch(
+        updateLoyaltyPoints({ email: user.email, points: calculatedPoints })
+      )
+        .then((action) => {
+          console.log("Loyalty points updated. Response:", action);
+          setPointsAdded(true); // Set flag to prevent further updates
+
+          // Show toast for points added
+          toast({
+            title: "Points Added!",
+            description: `${calculatedPoints} points have been added to your loyalty account.`,
+            variant: "success",
+          });
+
+          // Check for tier change and show promotion message if tier changes
+          if (
+            action.payload &&
+            action.payload.tier &&
+            action.payload.tier !== tier
+          ) {
+            toast({
+              title: "Congratulations!",
+              description: `You have been promoted to the ${action.payload.tier} tier!`,
+              variant: "success",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to update loyalty points:", error);
+          toast({
+            title: "Error",
+            description: "Failed to update loyalty points.",
+            variant: "destructive",
+          });
+        });
+    }
+  }, [calculatedPoints, pointsAdded, dispatch, user.email, tier, toast]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">

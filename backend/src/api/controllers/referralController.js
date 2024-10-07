@@ -51,13 +51,14 @@ exports.createReferral = async (req, res) => {
       subject: `You’ve been referred to join our loyalty program!`,
       text: `Hello,
   
-        You have been referred by ${referrerEmail} to become a member of the Fashion Retail Website. 
+        You have been referred by ${referrerEmail} to become a member of the Fashion House. 
   
         Please sign up using the following link to enjoy the benefits:
         ${referralLink}
   
         Best regards,
-        Fashion Retail Company Name`,
+        Manilka Fernando
+        Fashion House`,
     };
 
     console.log("Sending referral email with options:", mailOptions);

@@ -13,7 +13,7 @@ export const sendEmail = createAsyncThunk(
   async (emailDetails, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/sendmail/send-email",
+        `${import.meta.env.VITE_API_URL}sendmail/send-email`,
         emailDetails
       );
       return response.data;
