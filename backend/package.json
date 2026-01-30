@@ -13,7 +13,7 @@
   "author": "Backstreet Dudes",
   "license": "MIT ",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.4.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
